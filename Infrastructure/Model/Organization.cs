@@ -3,9 +3,9 @@ using DotNetEcosystemStudy.Aggregates;
 
 namespace DotNetEcosystemStudy.Infrastructure.Model;
 
-public class Organization : ITableObject<Guid>
+public class Organization : ITableObject<int>
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string OrganizationName { get; set; } = null!;
     public int ContributorsCount { get; set; }
     public string? Secret { get; set; }

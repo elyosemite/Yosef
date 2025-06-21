@@ -10,13 +10,14 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
     {
         builder.ToTable(nameof(Organization));
 
-        builder.HasKey(o => o.Identifier);
+        builder.HasKey(o => o.Id);
 
-        builder.HasIndex(o => o.Identifier)
-            .IsUnique();
+        builder.Property(o => o.Identifier)
+            .ValueGeneratedNever();
 
-        builder.Property(o => o.OrganizationName)
-            .IsRequired();
+        builder.Property(o => o.Id).ValueGeneratedOnAdd();
+
+        builder.Property(o => o.OrganizationName);
 
         builder.Property(o => o.ContributorsCount);
 

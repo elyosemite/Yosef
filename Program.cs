@@ -1,19 +1,21 @@
 using DotNetEcosystemStudy;
 using DotNetEcosystemStudy.DataModel;
 using DotNetEcosystemStudy.Endpoints;
+using DotNetEcosystemStudy.Infrastructure;
 using DotNetEcosystemStudy.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Middleware
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddAutoMapper(typeof(Program)); 
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddOpenApiDocument(config =>
 {
     config.DocumentName = "Dotnet";
     config.Title = "Dotnet API";
     config.Version = "v1";
 });
+builder.Services.AddEFRepository();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -62,10 +64,17 @@ organization.MapGet("/organization", () => GetOrganization.Action())
     .Produces<OrganizationDataModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-organization.MapPost("/organization", (OrganizationDataModel organizationDataModel)
-    => new CreateOrganization(globalSettings).Action(organizationDataModel.Name, organizationDataModel.ContributorsCount))
-        .WithName("CreateOrganization")
-        .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status400BadRequest);
+organization.MapPost("/organization", (OrganizationDataModel organizationDataModel) =>
+    {
+        var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+
+        return new CreateOrganization(organizationRepository)
+            .ActionAsync(
+                organizationDataModel.Name,
+                organizationDataModel.ContributorsCount);
+    })
+    .WithName("CreateOrganization")
+    .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest);
 
 app.Run();

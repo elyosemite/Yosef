@@ -1,6 +1,6 @@
 namespace DotNetEcosystemStudy.Aggregates;
 
-public interface ITableObject<TId> where TId : IEquatable<TId>
+public interface ITableObject<T> where T : IEquatable<T>
 {
     /// <summary>
     /// This identifier represents the unique register in database table.
@@ -9,5 +9,5 @@ public interface ITableObject<TId> where TId : IEquatable<TId>
     /// It is not the same as the AggregateRoot identifier.
     /// It is used to identify the record in the database table.
     /// </summary>
-    TId Id { get; }
+    T Id { get; }
 }

@@ -2,14 +2,13 @@ namespace DotNetEcosystemStudy.Aggregates;
 
 public class Project : IEntity<Guid>
 {
-    //public int Id { get; private set; }
     public Guid Identifier { get; }
     public string Name { get; private set; }
     public string Description { get; private set; }
     public int StarsCount { get; private set; }
     public int ForksCount { get; private set; }
     public int ContributorsCount { get; private set; }
-
+    public Guid OrganizationIdentifier { get; private set; }
 
     private Project(string name, string description, int starsCount, int forksCount, int contributorsCount)
     {
@@ -33,5 +32,13 @@ public class Project : IEntity<Guid>
             throw new ArgumentOutOfRangeException(nameof(contributorsCount), "Contributors count cannot be negative.");
 
         return new Project(name, description, starsCount, forksCount, contributorsCount);
+    }
+
+    public void UpdateOrganizationIdentifier(Guid organizationIdentifier)
+    {
+        if (organizationIdentifier == Guid.Empty)
+            throw new ArgumentException("Organization identifier cannot be empty.", nameof(organizationIdentifier));
+
+        OrganizationIdentifier = organizationIdentifier;
     }
 }

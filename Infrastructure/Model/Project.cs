@@ -3,17 +3,17 @@ using DotNetEcosystemStudy.Aggregates;
 
 namespace DotNetEcosystemStudy.Infrastructure.Model;
 
-public class Project : ITableObject<Guid>
+public class Project : ITableObject<int>
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int StarsCount { get; set; }
     public int ForksCount { get; set; }
     public int ContributorsCount { get; set; }
     public Guid Identifier { get; set; }
-    public virtual Organization Organization { get; set; }
-    
+    public Guid OrganizationIdentifier { get; set; }
+    public virtual Organization Organization { get; set; } = null!;
 }
 
 public class ProjectProfile : Profile

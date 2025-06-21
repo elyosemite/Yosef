@@ -4,13 +4,9 @@ public class Organization : IAggregateRoot<Guid>
 {
     public string Name { get; private set; }
     public int ContributorsCount { get; private set; }
-
-    /// <summary>
-    /// This field is just used in Domain Model, not in Data Model.
-    /// </summary>
     public string? Secret { get; private set; }
-    //public int Id { get; private set; }
     public Guid Identifier { get; private set; }
+    public Guid OrganizationIdentifier { get; set; }
     private List<Project> _projects = new();
     public IReadOnlyCollection<Project> Projects => _projects.AsReadOnly();
 
@@ -59,6 +55,11 @@ public class Organization : IAggregateRoot<Guid>
     {
         if (project == null)
             throw new ArgumentNullException(nameof(project), "Project cannot be null.");
+
+        if (string.IsNullOrWhiteSpace(OrganizationIdentifier.ToString()))
+            throw new InvalidOperationException("OrganizationIdentifier must be set before adding a project.");
+        
+        project.UpdateOrganizationIdentifier(OrganizationIdentifier);
 
         _projects.Add(project);
     }
