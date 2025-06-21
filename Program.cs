@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Middleware
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(Program)); 
 builder.Services.AddOpenApiDocument(config =>
 {
     config.DocumentName = "Dotnet";

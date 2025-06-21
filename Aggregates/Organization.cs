@@ -22,6 +22,14 @@ public class Organization : IAggregateRoot<Guid>
         Secret = secret;
     }
 
+    private Organization(Guid identifier, string name, int contributorsCount, string? secret = null)
+    {
+        Identifier = identifier;
+        Name = name;
+        ContributorsCount = contributorsCount;
+        Secret = secret;
+    }
+
     public static Organization OrganizationFactory(string name, int contributorsCount)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -30,6 +38,18 @@ public class Organization : IAggregateRoot<Guid>
             throw new ArgumentOutOfRangeException(nameof(contributorsCount), "Contributors count cannot be negative.");
 
         return new Organization(name, contributorsCount);
+    }
+
+    public static Organization OrganizationFactory(Guid identifier, string name, int contributorsCount)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Organization name cannot be empty.", nameof(name));
+        if (contributorsCount < 0)
+            throw new ArgumentOutOfRangeException(nameof(contributorsCount), "Contributors count cannot be negative.");
+        if (identifier == Guid.Empty)
+            throw new ArgumentException("Identifier cannot be empty.", nameof(identifier));
+
+        return new Organization(identifier, name, contributorsCount);
     }
 
     public void UpdateSecret(string secret)

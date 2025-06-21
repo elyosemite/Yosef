@@ -1,5 +1,5 @@
-using DotNetEcosystemStudy.Aggregates;
 using DotNetEcosystemStudy.Infrastructure.Configuration;
+using DotNetEcosystemStudy.Infrastructure.Model;
 using DotNetEcosystemStudy.Settings.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
