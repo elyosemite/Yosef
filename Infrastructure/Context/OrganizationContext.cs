@@ -26,5 +26,5 @@ public class OrganizationContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    public DbSet<Organization> Organization { get; set; }
+    public DbSet<OrganizationDataModel> Organization { get; set; }
 }

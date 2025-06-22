@@ -1,6 +1,6 @@
 namespace DotNetEcosystemStudy.Aggregates;
 
-public class Organization : IAggregateRoot<Guid>
+public class Organization : IAggregateRoot<Guid>, ITableObject<int>
 {
     public string Name { get; private set; }
     public int ContributorsCount { get; private set; }
@@ -8,6 +8,8 @@ public class Organization : IAggregateRoot<Guid>
     public Guid Identifier { get; private set; }
     private List<Project> _projects = new();
     public IReadOnlyCollection<Project> Projects => _projects.AsReadOnly();
+
+    public int Id { get; private set; }
 
     private Organization(string name, int contributorsCount, string? secret = null)
     {
@@ -61,5 +63,10 @@ public class Organization : IAggregateRoot<Guid>
         project.UpdateOrganizationIdentifier(Identifier);
 
         _projects.Add(project);
+    }
+
+    public void UpdateTableRegisterId(int id)
+    {
+        Id = id;
     }
 }

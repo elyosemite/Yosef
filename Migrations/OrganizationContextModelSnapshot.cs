@@ -17,7 +17,7 @@ namespace DotNetEcosystemStudy.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
 
-            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.Organization", b =>
+            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.OrganizationDataModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,10 +38,10 @@ namespace DotNetEcosystemStudy.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organization", (string)null);
+                    b.ToTable("OrganizationDataModel", (string)null);
                 });
 
-            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.Project", b =>
+            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.ProjectDataModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -72,21 +72,21 @@ namespace DotNetEcosystemStudy.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("ProjectDataModel", (string)null);
                 });
 
-            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.Project", b =>
+            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.ProjectDataModel", b =>
                 {
-                    b.HasOne("DotNetEcosystemStudy.Infrastructure.Model.Organization", "Organization")
+                    b.HasOne("DotNetEcosystemStudy.Infrastructure.Model.OrganizationDataModel", "Organization")
                         .WithMany("Projects")
                         .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.Organization", b =>
+            modelBuilder.Entity("DotNetEcosystemStudy.Infrastructure.Model.OrganizationDataModel", b =>
                 {
                     b.Navigation("Projects");
                 });

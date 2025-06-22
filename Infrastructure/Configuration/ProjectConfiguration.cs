@@ -4,17 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DotNetEcosystemStudy.Infrastructure.Configuration;
 
-// modelBuilder.Entity<Project>()
-//         .HasOne(p => p.Organization)                // Cada Project tem um Organization
-//         .WithMany(o => o.Projects)                  // Cada Organization tem muitos Projects
-//         .HasForeignKey(p => p.OrganizationId)       // Chave estrangeira
-//         .OnDelete(DeleteBehavior.Cascade);
-
-public class ProjectConfiguration : IEntityTypeConfiguration<Project>
+public class ProjectConfiguration : IEntityTypeConfiguration<ProjectDataModel>
 {
-    public void Configure(EntityTypeBuilder<Project> builder)
+    public void Configure(EntityTypeBuilder<ProjectDataModel> builder)
     {
-        builder.ToTable(nameof(Project));
+        builder.ToTable(nameof(ProjectDataModel));
 
         builder.HasKey(p => p.Id);
 

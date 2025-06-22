@@ -1,13 +1,13 @@
 using AutoMapper;
 using DotNetEcosystemStudy.Aggregates;
-using DotNetEcosystemStudy.Infrastructure;
+using DotNetEcosystemStudy.Infrastructure.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetEcosystemStudy.Infrastructure.Repository;
 
 public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : BaseEntityFrameworkRepository, IRepository<TAggregate, TId>
-    where TAggregate : class, IAggregateRoot<TId>
+    where TAggregate : class, IAggregateRoot<TId>, ITableObject<TDataModelId>
     where TDataModel : class, ITableObject<TDataModelId>
     where TId : IEquatable<TId>
     where TDataModelId : IEquatable<TDataModelId>
@@ -29,7 +29,7 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
 
             var dataModel = Mapper.Map<TDataModel>(aggregate);
 
-            if (dataModel is Model.Organization organization)
+            if (dataModel is OrganizationDataModel organization)
             {
                 Console.WriteLine($"[Before CreateAsync] - Organization Id: {organization.Id}");
                 Console.WriteLine($"[Before CreateAsync] - Organization Identifier: {organization.Identifier}");
@@ -51,7 +51,7 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
             await dbContext.AddAsync(dataModel);
             await dbContext.SaveChangesAsync();
 
-            if (aggregate is Model.Organization organization2)
+            if (aggregate is OrganizationDataModel organization2)
             {
                 Console.WriteLine($"[Before CreateAsync] - Organization Id: {organization2.Id}");
                 Console.WriteLine($"[After CreateAsync] - Organization Identifier: {organization2.Identifier}");
@@ -66,8 +66,8 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
                     Console.WriteLine($"[After CreateAsync] - Project Description: {project.Description}");
                 }
             }
-
-            //aggregate.Id = dataModel.Id;
+            
+            aggregate.UpdateTableRegisterId(dataModel.Id);
             return aggregate;
         }
     }

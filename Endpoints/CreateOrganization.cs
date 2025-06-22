@@ -1,32 +1,34 @@
-using DotNetEcosystemStudy.DataModel;
 using DotNetEcosystemStudy.Aggregates;
-using DotNetEcosystemStudy.Settings.Interfaces;
-using Infrastructure.Context;
 using DotNetEcosystemStudy.Infrastructure;
+using AutoMapper;
+using DotNetEcosystemStudy.Infrastructure.Model;
 
 namespace DotNetEcosystemStudy.Endpoints;
 
 public class CreateOrganization
 {
     private readonly IOrganizationRepository _organizationRepository;
+    private readonly IMapper _mapper;
 
-    public CreateOrganization(IOrganizationRepository organizationRepository)
+    public CreateOrganization(IOrganizationRepository organizationRepository, IMapper mapper)
     {
         _organizationRepository = organizationRepository;
+        _mapper = mapper;
     }
 
-    public async Task<IResult> ActionAsync(string name, int contributorsCount)
+    public async Task<IResult> ActionAsync(OrganizationRequest req)
     {
-        var organization = Organization.OrganizationFactory(name, contributorsCount);
-        var project = Project.ProjectFactory("Initial Project", "Description of the initial project", 5, 100, 1000);
-        organization.AddProject(project);
+        var organization = Organization.OrganizationFactory(req.OrganizationName, req.ContributorsCount);
 
-        Console.WriteLine($"[Before CreateAsync] - [Domain] - Creating Organization with Domain Identifier: {organization.Identifier}");
-        Console.WriteLine($"[Before CreateAsync] - [Domain] - Creating Project with Domain Identifier: {project.Identifier}");
-        await _organizationRepository.CreateAsync(organization);
-        Console.WriteLine($"[After CreateAsync] - [Domain] - Creating organization with Domain Identifier: {organization.Identifier}");
-        Console.WriteLine($"[After CreateAsync] - [Domain] - Creating Project with Domain Identifier: {project.Identifier}");
+        if (string.IsNullOrEmpty(req.Secret))
+            return TypedResults.BadRequest("Secret cannot be null or empty.");
 
-        return TypedResults.Ok(new OrganizationDataModel(organization));
+        organization.UpdateSecret(req.Secret);
+
+        var result = await _organizationRepository.CreateAsync(organization);
+
+        var dataModel = _mapper.Map<OrganizationDataModel>(result);
+
+        return TypedResults.Ok(dataModel);
     }
 }

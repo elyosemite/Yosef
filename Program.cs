@@ -1,7 +1,8 @@
+using AutoMapper;
 using DotNetEcosystemStudy;
-using DotNetEcosystemStudy.DataModel;
 using DotNetEcosystemStudy.Endpoints;
 using DotNetEcosystemStudy.Infrastructure;
+using DotNetEcosystemStudy.Infrastructure.Model;
 using DotNetEcosystemStudy.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,19 +60,13 @@ globalSettingsMapGroup.MapGet("/globalSettings", () => globalSettings)
     .Produces(StatusCodes.Status404NotFound);
 #endif
 
-organization.MapGet("/organization", () => GetOrganization.Action())
-    .WithName("GetOrganization")
-    .Produces<OrganizationDataModel>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status404NotFound);
-
-organization.MapPost("/organization", (OrganizationDataModel organizationDataModel) =>
+organization.MapPost("/organization", (OrganizationRequest req) =>
     {
         var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+        var mapper = app.Services.GetRequiredService<IMapper>();
 
-        return new CreateOrganization(organizationRepository)
-            .ActionAsync(
-                organizationDataModel.Name,
-                organizationDataModel.ContributorsCount);
+        return new CreateOrganization(organizationRepository, mapper)
+            .ActionAsync(req);
     })
     .WithName("CreateOrganization")
     .Produces<OrganizationDataModel>(StatusCodes.Status201Created)

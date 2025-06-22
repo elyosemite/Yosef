@@ -10,4 +10,11 @@ public interface ITableObject<T> where T : IEquatable<T>
     /// It is used to identify the record in the database table.
     /// </summary>
     T Id { get; }
+
+    /// <summary>
+    /// Updates the table register identifier.
+    /// This method is used to set the Id property after the aggregate root has been created.
+    /// It is typically called by the repository after the aggregate root has been saved to the database.
+    /// </summary>
+    void UpdateTableRegisterId(T id);
 }
