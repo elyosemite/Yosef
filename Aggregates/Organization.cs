@@ -6,7 +6,6 @@ public class Organization : IAggregateRoot<Guid>
     public int ContributorsCount { get; private set; }
     public string? Secret { get; private set; }
     public Guid Identifier { get; private set; }
-    public Guid OrganizationIdentifier { get; set; }
     private List<Project> _projects = new();
     public IReadOnlyCollection<Project> Projects => _projects.AsReadOnly();
 
@@ -56,10 +55,10 @@ public class Organization : IAggregateRoot<Guid>
         if (project == null)
             throw new ArgumentNullException(nameof(project), "Project cannot be null.");
 
-        if (string.IsNullOrWhiteSpace(OrganizationIdentifier.ToString()))
+        if (Identifier == Guid.Empty)
             throw new InvalidOperationException("OrganizationIdentifier must be set before adding a project.");
         
-        project.UpdateOrganizationIdentifier(OrganizationIdentifier);
+        project.UpdateOrganizationIdentifier(Identifier);
 
         _projects.Add(project);
     }
