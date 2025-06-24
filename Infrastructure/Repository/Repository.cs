@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetEcosystemStudy.Infrastructure.Repository;
 
-public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : BaseEntityFrameworkRepository, IRepository<TAggregate, TId>
-    where TAggregate : class, IAggregateRoot<TId>, ITableObject<TDataModelId>
+public abstract class Repository<TAggregate, TDataModel, TAggregateId, TDataModelId> : BaseEntityFrameworkRepository, IRepository<TAggregate, TAggregateId>
+    where TAggregate : class, IAggregateRoot<TAggregateId>, ITableObject<TDataModelId>
     where TDataModel : class, ITableObject<TDataModelId>
-    where TId : IEquatable<TId>
+    where TAggregateId : IEquatable<TAggregateId>
     where TDataModelId : IEquatable<TDataModelId>
 {
     public Repository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, Func<OrganizationContext, DbSet<TDataModel>> getDbSet)
@@ -37,7 +37,7 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
         throw new NotImplementedException();
     }
 
-    public async Task<TAggregate?> GetByIdAsync(TId id)
+    public async Task<TAggregate?> GetByIdAsync(TAggregateId id)
     {
         using (var scope = ServiceScopeFactory.CreateScope())
         {
@@ -45,7 +45,7 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
             //var entity = await GetDbSet(dbContext).FindAsync(id);
 
             var entity = await GetDbSet(dbContext).FirstOrDefaultAsync(e =>
-                    EF.Property<TId>(e, "Identifier").Equals(id));
+                    EF.Property<TAggregateId>(e, "Identifier").Equals(id));
 
             return Mapper.Map<TAggregate>(entity);
         }
@@ -68,7 +68,7 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
 
     public async Task UpsertAsync(TAggregate obj)
     {
-        if (obj.Id.Equals(default(TId)))
+        if (obj.Id.Equals(default(TAggregateId)))
         {
             await CreateAsync(obj);
         }

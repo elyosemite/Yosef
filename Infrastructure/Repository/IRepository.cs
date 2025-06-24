@@ -2,14 +2,14 @@ using DotNetEcosystemStudy.Aggregates;
 
 namespace DotNetEcosystemStudy.Infrastructure.Repository;
 
-public interface IRepository<T, TId>
-    where TId : IEquatable<TId>
-    where T : class, IAggregateRoot<TId>
+public interface IRepository<TAggregate, TAggregateId>
+    where TAggregateId : IEquatable<TAggregateId>
+    where TAggregate : class, IAggregateRoot<TAggregateId>
 {
-    Task<T?> GetByIdAsync(TId id);
+    Task<TAggregate?> GetByIdAsync(TAggregateId id);
 
-    Task<T> CreateAsync(T obj);
-    Task ReplaceAsync(T obj);
-    Task UpsertAsync(T obj);
-    Task DeleteAsync(T obj);
+    Task<TAggregate> CreateAsync(TAggregate obj);
+    Task ReplaceAsync(TAggregate obj);
+    Task UpsertAsync(TAggregate obj);
+    Task DeleteAsync(TAggregate obj);
 }
