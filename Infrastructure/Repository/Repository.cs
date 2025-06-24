@@ -1,6 +1,5 @@
 using AutoMapper;
 using DotNetEcosystemStudy.Aggregates;
-using DotNetEcosystemStudy.Infrastructure.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,48 +24,9 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
         using (var scope = ServiceScopeFactory.CreateScope())
         {
             var dbContext = GetDatabaseContext(scope);
-            //aggregate.SetNewId();
-
             var dataModel = Mapper.Map<TDataModel>(aggregate);
-
-            if (dataModel is OrganizationDataModel organization)
-            {
-                Console.WriteLine($"[Before CreateAsync] - Organization Id: {organization.Id}");
-                Console.WriteLine($"[Before CreateAsync] - Organization Identifier: {organization.Identifier}");
-                Console.WriteLine($"[Before CreateAsync] - Organization Name: {organization.OrganizationName}");
-                Console.WriteLine($"[Before CreateAsync] - Organization ContributorsCount: {organization.ContributorsCount}");
-                Console.WriteLine($"[Before CreateAsync] - Organization Secret: {organization.Secret}");
-                
-                foreach (var project in organization.Projects)
-                {
-                    Console.WriteLine($"\n[Before CreateAsync] - Project Id: {project.Id}");
-                    Console.WriteLine($"[Before CreateAsync] - Project Identifier: {project.Identifier}");
-                    Console.WriteLine($"[Before CreateAsync] - Project Name: {project.Name}");
-                    Console.WriteLine($"[Before CreateAsync] - Project Description: {project.Description}");
-                }
-            }
-
-            // Create Data Model
-
             await dbContext.AddAsync(dataModel);
             await dbContext.SaveChangesAsync();
-
-            if (aggregate is OrganizationDataModel organization2)
-            {
-                Console.WriteLine($"[Before CreateAsync] - Organization Id: {organization2.Id}");
-                Console.WriteLine($"[After CreateAsync] - Organization Identifier: {organization2.Identifier}");
-                Console.WriteLine($"[After CreateAsync] - Organization Name: {organization2.OrganizationName}");
-                Console.WriteLine($"[After CreateAsync] - Organization ContributorsCount: {organization2.ContributorsCount}");
-                Console.WriteLine($"[After CreateAsync] - Organization Secret: {organization2.Secret}");
-                
-                foreach (var project in organization2.Projects)
-                {
-                    Console.WriteLine($"\n[After CreateAsync] - Project Identifier: {project.Identifier}");
-                    Console.WriteLine($"[After CreateAsync] - Project Name: {project.Name}");
-                    Console.WriteLine($"[After CreateAsync] - Project Description: {project.Description}");
-                }
-            }
-            
             aggregate.UpdateTableRegisterId(dataModel.Id);
             return aggregate;
         }
@@ -77,18 +37,44 @@ public abstract class Repository<TAggregate, TDataModel, TId, TDataModelId> : Ba
         throw new NotImplementedException();
     }
 
-    public Task<TAggregate?> GetByIdAsync(TId id)
+    public async Task<TAggregate?> GetByIdAsync(TId id)
     {
-        throw new NotImplementedException();
+        using (var scope = ServiceScopeFactory.CreateScope())
+        {
+            var dbContext = GetDatabaseContext(scope);
+            //var entity = await GetDbSet(dbContext).FindAsync(id);
+
+            var entity = await GetDbSet(dbContext).FirstOrDefaultAsync(e =>
+                    EF.Property<TId>(e, "Identifier").Equals(id));
+
+            return Mapper.Map<TAggregate>(entity);
+        }
     }
 
-    public Task ReplaceAsync(TAggregate obj)
+    public async Task ReplaceAsync(TAggregate obj)
     {
-        throw new NotImplementedException();
+        using (var scope = ServiceScopeFactory.CreateScope())
+        {
+            var dbContext = GetDatabaseContext(scope);
+            var entity = await GetDbSet(dbContext).FindAsync(obj.Id);
+            if (entity != null)
+            {
+                var mappedEntity = Mapper.Map<TAggregate>(obj);
+                dbContext.Entry(entity).CurrentValues.SetValues(mappedEntity);
+                await dbContext.SaveChangesAsync();
+            }
+        }
     }
 
-    public Task UpsertAsync(TAggregate obj)
+    public async Task UpsertAsync(TAggregate obj)
     {
-        throw new NotImplementedException();
+        if (obj.Id.Equals(default(TId)))
+        {
+            await CreateAsync(obj);
+        }
+        else
+        {
+            await ReplaceAsync(obj);
+        }
     }
 }

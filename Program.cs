@@ -1,9 +1,11 @@
 using AutoMapper;
 using DotNetEcosystemStudy;
-using DotNetEcosystemStudy.Endpoints;
+using DotNetEcosystemStudy.Endpoints.CreateOrganization;
+using DotNetEcosystemStudy.Endpoints.GetOrganization;
 using DotNetEcosystemStudy.Infrastructure;
 using DotNetEcosystemStudy.Infrastructure.Model;
 using DotNetEcosystemStudy.Settings;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +72,16 @@ organization.MapPost("/organization", (OrganizationRequest req) =>
     })
     .WithName("CreateOrganization")
     .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest);
+
+organization.MapGet("/organization", ([FromQuery] Guid req) =>
+    {
+        var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+
+        return new GetOrganization(organizationRepository)
+            .ActionAsync(new GetOrganizationRequest(req));
+    })
+    .WithName("GetOrganization")
     .Produces(StatusCodes.Status400BadRequest);
 
 app.Run();

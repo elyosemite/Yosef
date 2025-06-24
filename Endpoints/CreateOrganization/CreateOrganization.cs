@@ -3,7 +3,7 @@ using DotNetEcosystemStudy.Infrastructure;
 using AutoMapper;
 using DotNetEcosystemStudy.Infrastructure.Model;
 
-namespace DotNetEcosystemStudy.Endpoints;
+namespace DotNetEcosystemStudy.Endpoints.CreateOrganization;
 
 public class CreateOrganization
 {

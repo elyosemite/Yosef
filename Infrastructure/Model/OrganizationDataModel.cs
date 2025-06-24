@@ -31,5 +31,9 @@ public class OrganizationProfile : Profile
             .ForMember(dest => dest.ContributorsCount, opt => opt.MapFrom(src => src.ContributorsCount))
             .ForMember(dest => dest.Secret, opt => opt.MapFrom(src => src.Secret))
             .ForMember(dest => dest.Projects, opt => opt.MapFrom(src => src.Projects));
+
+        CreateMap<OrganizationDataModel, Organization>()
+            .ForMember(dest => dest.Projects, opt => opt.Ignore())
+            .ConstructUsing(src => Organization.OrganizationFactory(src.Identifier, src.OrganizationName, src.ContributorsCount));
     }
 }

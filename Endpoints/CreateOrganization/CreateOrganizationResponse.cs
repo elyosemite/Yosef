@@ -1,0 +1,3 @@
+namespace DotNetEcosystemStudy.Endpoints.CreateOrganization;
+
+public record CreateOrganizationResponse(Guid OrganizationIdenfiger, string OrganizationName);
