@@ -1,7 +1,6 @@
 using DotNetEcosystemStudy.Aggregates;
 using DotNetEcosystemStudy.Infrastructure;
 using AutoMapper;
-using DotNetEcosystemStudy.Infrastructure.Model;
 
 namespace DotNetEcosystemStudy.Endpoints.CreateOrganization;
 
@@ -27,7 +26,7 @@ public class CreateOrganization
 
         var result = await _organizationRepository.CreateAsync(organization);
 
-        var dataModel = _mapper.Map<OrganizationDataModel>(result);
+        var dataModel = new CreateOrganizationResponse(result.Identifier, result.Name);
 
         return TypedResults.Ok(dataModel);
     }
