@@ -2,3 +2,5 @@
 [Bb]in
 .vscode
 Dev/vault/data
+LocalDatabases.db
+LocalDatabases.*

@@ -1,0 +1,37 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+
+exporters:
+  debug: # Exporter de logging para depuração (opcional)
+    verbosity: detailed
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push # Endpoint do Loki para logs
+  # Se você for usar traces (Jaeger/Tempo) e métricas (Prometheus/Tempo), adicione os exporters aqui
+  # otlp:
+  #   endpoint: "tempo:4317" # Exemplo para Tempo
+  # prometheus:
+  #   endpoint: "prometheus:9090" # Exemplo para Prometheus
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, loki] # Envia logs para o Loki
+    # Se você for usar traces e métricas, adicione os pipelines aqui
+    # traces:
+    #   receivers: [otlp]
+    #   processors: [batch]
+    #   exporters: [logging, otlp] # Exemplo para Tempo/Jaeger
+    # metrics:
+    #   receivers: [otlp]
+    #   processors: [batch]
+    #   exporters: [logging, prometheus] # Exemplo para Prometheus

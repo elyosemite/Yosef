@@ -1,0 +1,63 @@
+services:
+  # vault:
+  #   image: hashicorp/vault:latest
+  #   container_name: vault
+  #   ports:
+  #     - "8201:8200"
+  #   volumes:
+  #     - ./vault/data:/vault/data
+  #     - ./vault/config:/vault/config
+  #   environment:
+  #     - VAULT_ADDR=${VAULT_ADDR}
+  #     - VAULT_DEV_LISTEN_ADDRESS=${VAULT_DEV_LISTEN_ADDRESS}
+  #     - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_DEV_ROOT_TOKEN_ID}
+  #   cap_add:
+  #     - IPC_LOCK
+  #   command: server -dev -dev-root-token-id=${VAULT_DEV_ROOT_TOKEN_ID} -dev-listen-address=${VAULT_DEV_LISTEN_ADDRESS}
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100" # Porta HTTP do Loki
+      - "9095:9095" # Porta GRPC do Loki
+    volumes:
+      - ./observability/loki/loki-config.yml:/etc/loki/config.yml
+    command: -config.file=/etc/loki/config.yml
+    networks:
+      - monitoring-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Porta do Grafana
+    volumes:
+      - ./observability/grafana/provisioning/:/etc/grafana/provisioning/
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - loki # Garante que o Loki suba antes do Grafana
+    networks:
+      - monitoring-net
+
+  # OpenTelemetry Collector para receber logs (e traces/metrics)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    container_name: otel-collector
+    ports:
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
+    command: [--config=/etc/otel-collector-config.yml]
+    volumes:
+      - ./Dev/otel-collector-config.yml:/etc/otel-collector-config.yml
+    depends_on:
+      - loki
+    networks:
+      - monitoring-net
+
+networks:
+  monitoring-net:
+    driver: bridge
+
+volumes:
+  grafana-storage:
