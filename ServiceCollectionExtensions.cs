@@ -1,5 +1,5 @@
 using DotNetEcosystemStudy.Settings;
-using DotNetEcosystemStudy.Settings.Interfaces;
+using DotNetEcosystemStudy.src.Settings.Interfaces;
 
 namespace DotNetEcosystemStudy;
 
