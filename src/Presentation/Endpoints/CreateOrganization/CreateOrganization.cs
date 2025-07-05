@@ -1,6 +1,7 @@
 using DotNetEcosystemStudy.src.Domain.Aggregates;
 using DotNetEcosystemStudy.src.Infrastructure;
 using AutoMapper;
+using FluentValidation;
 
 namespace DotNetEcosystemStudy.src.Presentation.Endpoints.CreateOrganization;
 
@@ -8,21 +9,40 @@ public class CreateOrganization
 {
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<CreateOrganization> _logger;
+    private readonly IValidator<OrganizationRequest> _validator;
 
-    public CreateOrganization(IOrganizationRepository organizationRepository, IMapper mapper)
+    public CreateOrganization(IOrganizationRepository organizationRepository, IMapper mapper, ILogger<CreateOrganization> logger, IValidator<OrganizationRequest> validator)
     {
         _organizationRepository = organizationRepository;
         _mapper = mapper;
+        _logger = logger;
+        _validator = validator;
     }
 
     public async Task<IResult> ActionAsync(OrganizationRequest req)
     {
+        _logger.LogInformation("Creating organization with name: {OrganizationName} and contributors count: {ContributorsCount}", req.OrganizationName, req.ContributorsCount);
+        var validationResult = await _validator.ValidateAsync(req);
+
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Validation failed for organization creation: {Errors}", validationResult.Errors);
+
+            var detailedProblem = new HttpValidationProblemDetails(validationResult.ToDictionary())
+            {
+                Title = "Validation Error",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "One or more validation errors occurred.",
+                Instance = req.OrganizationName
+            };
+
+            return TypedResults.BadRequest(detailedProblem);
+        }
+
         var organization = Organization.OrganizationFactory(req.OrganizationName, req.ContributorsCount);
 
-        if (string.IsNullOrEmpty(req.Secret))
-            return TypedResults.BadRequest("Secret cannot be null or empty.");
-
-        organization.UpdateSecret(req.Secret);
+        organization.UpdateSecret(req.Secret!);
 
         var result = await _organizationRepository.CreateAsync(organization);
 

@@ -8,7 +8,7 @@ using DotNetEcosystemStudy.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Exceptions;
-
+using FluentValidation;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -43,6 +43,7 @@ try
     builder.Host.UseSerilog();
 
     // Middleware
+    builder.Services.AddValidatorsFromAssemblyContaining<Program>();
     builder.Services.AddOpenTelemetry()
     .WithTracing(tracerProviderBuilder =>
     {
@@ -125,12 +126,12 @@ try
         .Produces(StatusCodes.Status404NotFound);
 #endif
 
-    organization.MapPost("/organization", (OrganizationRequest req) =>
+    organization.MapPost("/organization", (OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
         {
             var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
             var mapper = app.Services.GetRequiredService<IMapper>();
 
-            return new CreateOrganization(organizationRepository, mapper)
+            return new CreateOrganization(organizationRepository, mapper, logger, validator)
                 .ActionAsync(req);
         })
         .WithName("CreateOrganization")
