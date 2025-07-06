@@ -51,9 +51,8 @@ function Add-RandomOrganizations {
         } | ConvertTo-Json
 
         
-        if ($i % 10000 -eq 0) {
+        if ($i % 1 -eq 0) {
             Write-Host "`n[$i/$Count] Enviando requisição POST para $Url..."
-            continue
         }
 
         try {

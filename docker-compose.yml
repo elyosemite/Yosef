@@ -37,6 +37,7 @@ services:
       - grafana-storage:/var/lib/grafana
     depends_on:
       - loki # Garante que o Loki suba antes do Grafana
+      - jaeger # Garante que o Jaeger suba antes do Grafana
     networks:
       - monitoring-net
 
@@ -55,9 +56,27 @@ services:
     networks:
       - monitoring-net
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    hostname: jaeger
+    container_name: jaeger
+    ports:
+      - "16686:16686" # UI
+      #- "4317:4317" # OTLP gRPC (para o OTel Collector enviar)
+      - "14250:14250" # gRPC collector
+      - "14268:14268" # HTTP collector
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      COLLECTOR_ZIPKIN_HOST_PORT: "9411"
+    volumes:
+      - jaeger_data:/badger
+    networks:
+      - monitoring-net
+
 networks:
   monitoring-net:
     driver: bridge
 
 volumes:
   grafana-storage:
+  jaeger_data:

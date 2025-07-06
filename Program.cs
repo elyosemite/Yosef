@@ -14,9 +14,17 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using Serilog.Sinks.OpenTelemetry;
+using System.Diagnostics;
+using DotNetEcosystemStudy.Observability;
+using Serilog.Events;
+
+// Custom ActivitySource for the application
+var greeterActivitySource = new ActivitySource("OtPrGrJa.Example");
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
     .Enrich.FromLogContext()
     .Enrich.WithMachineName()
     .Enrich.WithProcessId()
@@ -48,11 +56,16 @@ try
     .WithTracing(tracerProviderBuilder =>
     {
         tracerProviderBuilder
-            .AddSource("DotNetEcosystemStudy") // Nome da sua aplicação ou de instrumentação específica
+            .AddSource("DotNetEcosystemStudy")
+            .AddSource(greeterActivitySource.Name)
             .ConfigureResource(resource => resource
                 .AddService("DotNetEcosystemStudy", serviceInstanceId: Environment.MachineName))
             .AddAspNetCoreInstrumentation() // Instrumenta requisições ASP.NET Core
             .AddHttpClientInstrumentation() // Instrumenta chamadas HTTP
+            .AddEntityFrameworkCoreInstrumentation(p =>
+            {
+                p.SetDbStatementForText = true;
+            })
             .AddOtlpExporter(options =>
             {
                 options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
@@ -65,8 +78,9 @@ try
             .ConfigureResource(resource => resource
                 .AddService("DotNetEcosystemStudy", serviceInstanceId: Environment.MachineName))
             .AddAspNetCoreInstrumentation()
+            .AddMeter(Metrics.GreeterMeter.Name)
             .AddHttpClientInstrumentation()
-            .AddRuntimeInstrumentation() // Métricas de runtime do .NET
+            .AddRuntimeInstrumentation()
             .AddOtlpExporter(options =>
             {
                 options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
@@ -111,6 +125,7 @@ try
         });
     }
 
+
     var organization = app.MapGroup("/organization")
         .WithTags("OrganizationTag")
         .WithName("OrganizationName");
@@ -128,11 +143,22 @@ try
 
     organization.MapPost("/organization", (OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
         {
+            using var activity = greeterActivitySource.StartActivity("GreeterActivity");
+            logger.LogInformation("Sending greeting and creating organization");
+
+            Metrics.CountGreetings.Add(1);
+
             var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
             var mapper = app.Services.GetRequiredService<IMapper>();
 
-            return new CreateOrganization(organizationRepository, mapper, logger, validator)
+            var org = new CreateOrganization(organizationRepository, mapper, logger, validator)
                 .ActionAsync(req);
+
+            Metrics.CountOrganizationsCreated.Add(1);
+            activity?.SetTag("greeting", "Hello World!");
+            activity?.SetTag("organization", req.OrganizationName);
+
+            return org;
         })
         .WithName("CreateOrganization")
         .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
