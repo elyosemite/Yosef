@@ -1,5 +1,4 @@
 using AutoMapper;
-using DotNetEcosystemStudy;
 using DotNetEcosystemStudy.src.Presentation.Endpoints.CreateOrganization;
 using DotNetEcosystemStudy.src.Presentation.Endpoints.GetOrganization;
 using DotNetEcosystemStudy.src.Infrastructure;
@@ -14,175 +13,209 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using Serilog.Sinks.OpenTelemetry;
-using System.Diagnostics;
 using DotNetEcosystemStudy.Observability;
 using Serilog.Events;
+using System.Diagnostics;
 
-// Custom ActivitySource for the application
-var greeterActivitySource = new ActivitySource("OtPrGrJa.Example");
+namespace DotNetEcosystemStudy;
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .Enrich.WithMachineName()
-    .Enrich.WithProcessId()
-    .Enrich.WithThreadId()
-    .Enrich.WithExceptionDetails()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.Debug()
-    .WriteTo.OpenTelemetry(options =>
+public class Program
+{
+    private static readonly Random _random = new Random();
+    private static readonly ActivitySource _greeterActivitySource = new ActivitySource("ApplicationBeginning");
+
+    private static async Task Delay<T>(ILogger<T> logger)
     {
-        options.Endpoint = "http://localhost:4317/v1/logs";
-        options.Protocol = OtlpProtocol.Grpc;
-        options.ResourceAttributes = new Dictionary<string, object>
+        var randomlyChoosedNumber = _random.Next(1, 10000);
+        if (randomlyChoosedNumber % 7 == 0)
         {
+            var waitingTime = _random.Next(1, 15);
+            logger.LogInformation($"Number {randomlyChoosedNumber} devided by 7, waiting {waitingTime} seconds...");
+            await Task.Delay(TimeSpan.FromSeconds(waitingTime));
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Information()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .Enrich.WithProcessId()
+        .Enrich.WithThreadId()
+        .Enrich.WithExceptionDetails()
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+        .WriteTo.Debug()
+        .WriteTo.OpenTelemetry(options =>
+        {
+            options.Endpoint = "http://localhost:4317/v1/logs";
+            options.Protocol = OtlpProtocol.Grpc;
+            options.ResourceAttributes = new Dictionary<string, object>
+            {
             { "service.name", "DotNetEcosystemStudy" },
             { "service.instance.id", Environment.MachineName }
-        };
-    })
-    .CreateLogger();
+            };
+        })
+        .CreateLogger();
 
-try
-{
-    Log.Information("Starting web host");
-    var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog();
-
-    // Middleware
-    builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-    builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder =>
-    {
-        tracerProviderBuilder
-            .AddSource("DotNetEcosystemStudy")
-            .AddSource(greeterActivitySource.Name)
-            .ConfigureResource(resource => resource
-                .AddService("DotNetEcosystemStudy", serviceInstanceId: Environment.MachineName))
-            .AddAspNetCoreInstrumentation() // Instrumenta requisições ASP.NET Core
-            .AddHttpClientInstrumentation() // Instrumenta chamadas HTTP
-            .AddEntityFrameworkCoreInstrumentation(p =>
-            {
-                p.SetDbStatementForText = true;
-            })
-            .AddOtlpExporter(options =>
-            {
-                options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
-                options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
-            });
-    })
-    .WithMetrics(meterProviderBuilder =>
-    {
-        meterProviderBuilder
-            .ConfigureResource(resource => resource
-                .AddService("DotNetEcosystemStudy", serviceInstanceId: Environment.MachineName))
-            .AddAspNetCoreInstrumentation()
-            .AddMeter(Metrics.GreeterMeter.Name)
-            .AddHttpClientInstrumentation()
-            .AddRuntimeInstrumentation()
-            .AddOtlpExporter(options =>
-            {
-                options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
-                options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
-            });
-    });
-    
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddAutoMapper(typeof(Program));
-    builder.Services.AddOpenApiDocument(config =>
-    {
-        config.DocumentName = "Dotnet";
-        config.Title = "Dotnet API";
-        config.Version = "v1";
-    });
-    builder.Services.AddEFRepository();
-
-    if (builder.Environment.IsDevelopment())
-    {
-        Console.WriteLine("Development environment detected.");
-        builder.Configuration.AddUserSecrets<Program>();
-    }
-
-    var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
-    if (!globalSettings.SelfHosted)
-    {
-        //builder.Services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimitOptions"));
-        //builder.Services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
-    }
-
-    var app = builder.Build();
-
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseOpenApi();
-        app.UseSwaggerUi(config =>
+        try
         {
-            config.DocumentTitle = "TodoAPI";
-            config.Path = "/swagger";
-            config.DocumentPath = "/swagger/{documentName}/swagger.json";
-            config.DocExpansion = "list";
-        });
-    }
+            
+            Log.Information("Starting web host");
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSerilog();
 
+            // Middleware
+            builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+            builder.Services.AddOpenTelemetry()
+            .WithTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                    .AddSource("DotNetEcosystemStudy")
+                    .AddSource(_greeterActivitySource.Name)
+                    .ConfigureResource(resource => resource
+                        .AddService("DotNetEcosystemStudy", serviceInstanceId: Environment.MachineName))
+                    .AddAspNetCoreInstrumentation() // Instrumenta requisições ASP.NET Core
+                    .AddHttpClientInstrumentation() // Instrumenta chamadas HTTP
+                    .AddEntityFrameworkCoreInstrumentation(p =>
+                    {
+                        p.SetDbStatementForText = true;
+                    })
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
+                        options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                    })
+                    .AddConsoleExporter();
+            })
+            .WithMetrics(meterProviderBuilder =>
+            {
+                meterProviderBuilder
+                    .ConfigureResource(resource => resource
+                        .AddService("DotNetEcosystemStudy", serviceInstanceId: Environment.MachineName))
+                    .AddAspNetCoreInstrumentation()
+                    .AddMeter(Metrics.GreeterMeter.Name)
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddSqlClientInstrumentation() // TODO remover depois
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
+                        options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                    })
+                    .AddConsoleExporter();
+            });
 
-    var organization = app.MapGroup("/organization")
-        .WithTags("OrganizationTag")
-        .WithName("OrganizationName");
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddOpenApiDocument(config =>
+            {
+                config.DocumentName = "Dotnet";
+                config.Title = "Dotnet API";
+                config.Version = "v1";
+            });
+            builder.Services.AddEFRepository();
+
+            if (builder.Environment.IsDevelopment())
+            {
+                Console.WriteLine("Development environment detected.");
+                builder.Configuration.AddUserSecrets<Program>();
+            }
+
+            var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
+            if (!globalSettings.SelfHosted)
+            {
+                //builder.Services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimitOptions"));
+                //builder.Services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+            }
+
+            var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseOpenApi();
+                app.UseSwaggerUi(config =>
+                {
+                    config.DocumentTitle = "TodoAPI";
+                    config.Path = "/swagger";
+                    config.DocumentPath = "/swagger/{documentName}/swagger.json";
+                    config.DocExpansion = "list";
+                });
+            }
+
+            var organization = app.MapGroup("/organization")
+                .WithTags("OrganizationTag")
+                .WithName("OrganizationName");
 
 #if DEBUG
-    var globalSettingsMapGroup = app.MapGroup("/globalSettings")
-        .WithTags("GlobalSettingsTag")
-        .WithName("GlobalSettingsName");
+            var globalSettingsMapGroup = app.MapGroup("/globalSettings")
+                .WithTags("GlobalSettingsTag")
+                .WithName("GlobalSettingsName");
 
-    globalSettingsMapGroup.MapGet("/globalSettings", () => globalSettings)
-        .WithName("GetGlobalSettings")
-        .Produces<GlobalSettings>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound);
+            globalSettingsMapGroup.MapGet("/globalSettings", () => globalSettings)
+                .WithName("GetGlobalSettings")
+                .Produces<GlobalSettings>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound);
 #endif
+            organization.MapPost("/organization", async ([FromBody] OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
+                {
+                    using var activity = _greeterActivitySource.StartActivity("GreeterActivity");
+                    logger.LogInformation("Sending greeting and creating organization");
 
-    organization.MapPost("/organization", (OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
+                    Metrics.CountGreetings.Add(1); // It goes to Prometheus
+
+                    var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+                    var mapper = app.Services.GetRequiredService<IMapper>();
+
+                    await Delay(logger);
+
+                    var org = await new CreateOrganization(organizationRepository, mapper, logger, validator)
+                        .ActionAsync(req);
+                    activity?.AddEvent(new ActivityEvent("The application just created one org"));
+                    activity?.SetStatus(ActivityStatusCode.Ok, "Use this text give more information about the error. In this case, one org was successfuklly created");
+
+                    Metrics.CountOrganizationsCreated.Add(1);  // It goes to Prometheus
+                    activity?.SetTag("greeting", "Hello World!");
+                    activity?.SetTag("organization", req.OrganizationName);
+
+                    return org;
+                })
+                .WithName("CreateOrganization")
+                .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
+                .Produces(StatusCodes.Status400BadRequest);
+
+            organization.MapGet("/organization", async ([FromQuery] Guid req, ILogger<GetOrganization> logger) =>
+                {
+                    using var activity = _greeterActivitySource.StartActivity("GetOrganization");
+                    logger.LogInformation($"Get organization by id = {req}");
+
+                    var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+
+                    await Delay(logger);
+
+                    activity?.SetTag("organizationId", req);
+
+                    var org = await new GetOrganization(organizationRepository)
+                        .ActionAsync(new GetOrganizationRequest(req));
+
+                    return org;
+                })
+                .WithName("GetOrganization")
+                .Produces(StatusCodes.Status400BadRequest);
+
+            app.Run();
+        }
+        catch (Exception ex)
         {
-            using var activity = greeterActivitySource.StartActivity("GreeterActivity");
-            logger.LogInformation("Sending greeting and creating organization");
-
-            Metrics.CountGreetings.Add(1);
-
-            var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
-            var mapper = app.Services.GetRequiredService<IMapper>();
-
-            var org = new CreateOrganization(organizationRepository, mapper, logger, validator)
-                .ActionAsync(req);
-
-            Metrics.CountOrganizationsCreated.Add(1);
-            activity?.SetTag("greeting", "Hello World!");
-            activity?.SetTag("organization", req.OrganizationName);
-
-            return org;
-        })
-        .WithName("CreateOrganization")
-        .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status400BadRequest);
-
-    organization.MapGet("/organization", ([FromQuery] Guid req) =>
+            Log.Fatal(ex, "Application start-up failed");
+            return;
+        }
+        finally
         {
-            var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
-
-            return new GetOrganization(organizationRepository)
-                .ActionAsync(new GetOrganizationRequest(req));
-        })
-        .WithName("GetOrganization")
-        .Produces(StatusCodes.Status400BadRequest);
-
-    app.Run();
-}
-catch (Exception ex)
-{
-    Log.Fatal(ex, "Application start-up failed");
-    return;
-}
-finally
-{
-    Log.Information("Application ended successfully");
-    Log.CloseAndFlush();
+            Log.Information("Application ended successfully");
+            Log.CloseAndFlush();
+        }
+    }
 }
