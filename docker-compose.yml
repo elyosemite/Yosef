@@ -5,7 +5,7 @@ services:
   #   ports:
   #     - "8201:8200"
   #   volumes:
-  #     - ./vault/data:/vault/data
+  #     - ./vault/data:/vault/datab
   #     - ./vault/config:/vault/config
   #   environment:
   #     - VAULT_ADDR=${VAULT_ADDR}
@@ -72,6 +72,27 @@ services:
       - jaeger_data:/badger
     networks:
       - monitoring-net
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # - ./nginx/ssl:/etc/nginx/ssl:ro # Descomente e crie a pasta 'ssl' com seus certificados se usar HTTPS
+    depends_on:
+      - myapp
+    restart: unless-stopped
+  
+  myapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    restart: unless-stopped
 
 networks:
   monitoring-net:

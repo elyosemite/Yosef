@@ -47,6 +47,7 @@ public class CreateOrganization
         var result = await _organizationRepository.CreateAsync(organization);
 
         var dataModel = new CreateOrganizationResponse(result.Identifier, result.Name);
+        _logger.LogInformation("Organization successfully created {@organization}", dataModel);
 
         return TypedResults.Ok(dataModel);
     }

@@ -26,12 +26,43 @@ public class Program
 
     private static async Task Delay<T>(ILogger<T> logger)
     {
+        using var activity = _greeterActivitySource.StartActivity("Simulate delay");
+        activity?.SetStatus(ActivityStatusCode.Unset, "The status for this operation has not been set yet");
+        activity?.AddEvent(new ActivityEvent("Delay started"));
+        activity?.AddEvent(new ActivityEvent("Delay finished (if any)"));
+        activity?.AddEvent(new ActivityEvent("Delay method completed"));
+
+        activity?.SetTag("delay.timestamp", DateTime.UtcNow.ToString("o"));
+        activity?.SetTag("delay.threadId", Environment.CurrentManagedThreadId);
+        activity?.SetTag("delay.environment", Environment.MachineName);
+
         var randomlyChoosedNumber = _random.Next(1, 10000);
+        activity?.AddEvent(new ActivityEvent($"Random number generated {randomlyChoosedNumber}"));
         if (randomlyChoosedNumber % 7 == 0)
         {
             var waitingTime = _random.Next(1, 15);
             logger.LogInformation($"Number {randomlyChoosedNumber} devided by 7, waiting {waitingTime} seconds...");
+
+            activity?.SetTag("delay.randomNumber", randomlyChoosedNumber);
+            activity?.SetTag("delay.isMultipleOf7", randomlyChoosedNumber % 7 == 0);
+
             await Task.Delay(TimeSpan.FromSeconds(waitingTime));
+        }
+        else if (randomlyChoosedNumber % 13 == 0) // It means an error
+        {
+            var waitingTime = _random.Next(1, 15);
+            logger.LogInformation($"Waiting {waitingTime} seconds...");
+            activity?.SetStatus(ActivityStatusCode.Error, "An error occurred during the operation");
+
+            activity?.SetTag("delay.isMultipleOf13", randomlyChoosedNumber);
+            logger.LogError($"Number {randomlyChoosedNumber} devided by 13 means an error.");
+        }
+        else
+        {
+            var waitingTime = _random.Next(5, 30);
+            logger.LogInformation($"Waiting {waitingTime} seconds...");
+            activity?.SetTag("delay.NotMultipleOf7Or13", randomlyChoosedNumber);
+            activity?.SetStatus(ActivityStatusCode.Ok, "An occurred default operation during the operation");
         }
     }
 
@@ -54,15 +85,15 @@ public class Program
             options.Protocol = OtlpProtocol.Grpc;
             options.ResourceAttributes = new Dictionary<string, object>
             {
-            { "service.name", "DotNetEcosystemStudy" },
-            { "service.instance.id", Environment.MachineName }
+                { "service.name", "DotNetEcosystemStudy" },
+                { "service.instance.id", Environment.MachineName }
             };
         })
         .CreateLogger();
 
         try
         {
-            
+
             Log.Information("Starting web host");
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSerilog();
@@ -174,7 +205,6 @@ public class Program
                     var org = await new CreateOrganization(organizationRepository, mapper, logger, validator)
                         .ActionAsync(req);
                     activity?.AddEvent(new ActivityEvent("The application just created one org"));
-                    activity?.SetStatus(ActivityStatusCode.Ok, "Use this text give more information about the error. In this case, one org was successfuklly created");
 
                     Metrics.CountOrganizationsCreated.Add(1);  // It goes to Prometheus
                     activity?.SetTag("greeting", "Hello World!");
