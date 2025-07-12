@@ -1,0 +1,119 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Alfredo\\Projects\\Yosef\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DF8007E8-BD15-4A15-9775-E21AEB85B53D}|ProjectManagement\\ProjectManagement.Presentation\\ProjectManagement.Presentation.csproj|c:\\users\\alfredo\\projects\\yosef\\projectmanagement\\projectmanagement.presentation\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{DF8007E8-BD15-4A15-9775-E21AEB85B53D}|ProjectManagement\\ProjectManagement.Presentation\\ProjectManagement.Presentation.csproj|solutionrelative:projectmanagement\\projectmanagement.presentation\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DA726E2-570F-4A62-B443-4EAAC7BA30CC}|ProjectManagement\\ProjectManagement.Infrastructure\\ProjectManagement.Infrastructure.csproj|c:\\users\\alfredo\\projects\\yosef\\projectmanagement\\projectmanagement.infrastructure\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DA726E2-570F-4A62-B443-4EAAC7BA30CC}|ProjectManagement\\ProjectManagement.Infrastructure\\ProjectManagement.Infrastructure.csproj|solutionrelative:projectmanagement\\projectmanagement.infrastructure\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DA726E2-570F-4A62-B443-4EAAC7BA30CC}|ProjectManagement\\ProjectManagement.Infrastructure\\ProjectManagement.Infrastructure.csproj|c:\\users\\alfredo\\projects\\yosef\\projectmanagement\\projectmanagement.infrastructure\\entityframeworkservicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DA726E2-570F-4A62-B443-4EAAC7BA30CC}|ProjectManagement\\ProjectManagement.Infrastructure\\ProjectManagement.Infrastructure.csproj|solutionrelative:projectmanagement\\projectmanagement.infrastructure\\entityframeworkservicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 226,
+          "SelectedChildIndex": 12,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{a80febb4-e7e0-4147-b476-21aaf2453969}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\Alfredo\\Projects\\Yosef\\ProjectManagement\\ProjectManagement.Presentation\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "ProjectManagement\\ProjectManagement.Presentation\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\Alfredo\\Projects\\Yosef\\ProjectManagement\\ProjectManagement.Presentation\\Properties\\launchSettings.json",
+              "RelativeToolTip": "ProjectManagement\\ProjectManagement.Presentation\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-12T02:08:41.162Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EntityFrameworkServiceCollectionExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\Alfredo\\Projects\\Yosef\\ProjectManagement\\ProjectManagement.Infrastructure\\EntityFrameworkServiceCollectionExtensions.cs",
+              "RelativeDocumentMoniker": "ProjectManagement\\ProjectManagement.Infrastructure\\EntityFrameworkServiceCollectionExtensions.cs",
+              "ToolTip": "C:\\Users\\Alfredo\\Projects\\Yosef\\ProjectManagement\\ProjectManagement.Infrastructure\\EntityFrameworkServiceCollectionExtensions.cs",
+              "RelativeToolTip": "ProjectManagement\\ProjectManagement.Infrastructure\\EntityFrameworkServiceCollectionExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T02:06:58.516Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ServiceCollectionExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\Alfredo\\Projects\\Yosef\\ProjectManagement\\ProjectManagement.Infrastructure\\ServiceCollectionExtensions.cs",
+              "RelativeDocumentMoniker": "ProjectManagement\\ProjectManagement.Infrastructure\\ServiceCollectionExtensions.cs",
+              "ToolTip": "C:\\Users\\Alfredo\\Projects\\Yosef\\ProjectManagement\\ProjectManagement.Infrastructure\\ServiceCollectionExtensions.cs",
+              "RelativeToolTip": "ProjectManagement\\ProjectManagement.Infrastructure\\ServiceCollectionExtensions.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAADwvwcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T02:03:56.124Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

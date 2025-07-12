@@ -16,7 +16,7 @@ if ($clear -eq $true) {
 }
 
 $projects = @{
-    DotNetEcosystemStudy = "../"
+    Yosef = "../"
 }
 
 foreach ($key in $projects.keys) {

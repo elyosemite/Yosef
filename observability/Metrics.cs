@@ -1,6 +1,6 @@
 using System.Diagnostics.Metrics;
 
-namespace DotNetEcosystemStudy.Observability;
+namespace Observability;
 
 public static class Metrics
 {
