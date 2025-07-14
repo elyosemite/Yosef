@@ -16,7 +16,7 @@ if ($clear -eq $true) {
 }
 
 $projects = @{
-    Yosef = "../"
+    ProjectManagement = "../src/ProjectManagement/ProjectManagement.Presentation"
 }
 
 foreach ($key in $projects.keys) {
