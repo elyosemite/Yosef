@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using ProjectManagement.Infrastructure.Context;
 using ProjectManagement.Infrastructure.Settings;
+
+namespace ProjectManagement.Infrastructure.Context;
 
 public class OrganizationContextFactory : IDesignTimeDbContextFactory<OrganizationContext>
 {
     public OrganizationContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json")
+            .AddUserSecrets("yosef-ProjecManagement")
+            .AddCommandLine(args)
             .Build();
 
         var globalSettings = new GlobalSettings();
