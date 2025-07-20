@@ -131,6 +131,11 @@ public class Program
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddSqlClientInstrumentation() // TODO remover depois
+                    .AddPrometheusExporter(options =>
+                    {
+                        options.ScrapeResponseCacheDurationMilliseconds = 10000; // Cache de 10 segundos
+                        options.ScrapeEndpointPath = "/metrics"; // Caminho do endpoint de métricas
+                    })
                     .AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
@@ -202,8 +207,7 @@ public class Program
 
                     await Delay(logger);
 
-                    var org = await new CreateOrganization(organizationRepository, mapper, logger, validator)
-                        .ActionAsync(req);
+                    var org = await new CreateOrganization(organizationRepository, mapper, logger, validator).ActionAsync(req);
                     activity?.AddEvent(new ActivityEvent("The application just created one org"));
 
                     Metrics.CountOrganizationsCreated.Add(1);  // It goes to Prometheus
@@ -235,6 +239,7 @@ public class Program
                 .WithName("GetOrganization")
                 .Produces(StatusCodes.Status400BadRequest);
 
+            app.MapPrometheusScrapingEndpoint();
             app.Run();
         }
         catch (Exception ex)

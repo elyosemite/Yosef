@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s # Define o intervalo padrão para coletar métricas
+
+scrape_configs:
+  # 1. Job para monitorar o próprio Prometheus
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # 2. Job para monitorar o OpenTelemetry Collector
+  # O OTel Collector pode expor métricas coletadas para o Prometheus fazer o scrape.
+  # A porta padrão para isso no OTel Collector é a 8889.
+  - job_name: "otel-collector"
+    static_configs:
+      - targets: ["otel-collector:4317"]
+
+  # 3. Job para monitorar sua aplicação .NET rodando no HOST
+  - job_name: "yosef-app"
+    metrics_path: /metrics # Endpoint padrão exposto pela sua app .NET com OpenTelemetry
+    static_configs:
+      # 💡 'host.docker.internal' é um DNS especial que, de dentro do contêiner,
+      # aponta para o IP da sua máquina (o host).
+      # Troque 7252 pela porta HTTP em que sua aplicação expõe as métricas.
+      - targets: ["host.docker.internal:7252"]

@@ -1,5 +1,5 @@
 param(
-    [string]$Url = "http://localhost:5127/organization/organization"
+    [string]$Url = "https://localhost:7287/organization/organization"
 )
 
 # Arrays de nomes e segredos

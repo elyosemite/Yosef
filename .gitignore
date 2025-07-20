@@ -3,4 +3,6 @@
 .vs
 .vscode
 Dev/vault/data
+Dev/LocalDatabase.*
+Dev/*.db
 LocalDatabase.*
