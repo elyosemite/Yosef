@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
             //ConfigurationBinder.Bind(configuration.GetSection("Dev:SelfHostOverride:GlobalSettings"), globalSettings);
         }
 
+        services.AddAutoMapper(cfg => { }, typeof(ServiceCollectionExtensions));
         services.AddSingleton(s => globalSettings);
         services.AddSingleton<IGlobalSettings, GlobalSettings>(s => globalSettings);
         return globalSettings;

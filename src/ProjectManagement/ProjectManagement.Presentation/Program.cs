@@ -135,12 +135,12 @@ public class Program
                     {
                         options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
-                    })
-                    .AddConsoleExporter();
+                    });
+                    //.AddConsoleExporter();
             });
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(cfg => { }, typeof(Program));
             builder.Services.AddOpenApiDocument(config =>
             {
                 config.DocumentName = "Dotnet";
