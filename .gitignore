@@ -2,7 +2,8 @@
 [Bb]in
 .vs
 .vscode
-Dev/vault/data
-Dev/LocalDatabase.*
-Dev/*.db
+dev/vault/data
+dev/LocalDatabase.*
+dev/*.db
+dev/secrets.json
 LocalDatabase.*
