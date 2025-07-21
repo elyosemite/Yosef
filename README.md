@@ -91,7 +91,7 @@ Our goal is to be production-ready. The following database support is planned fo
   * **PostgreSQL:** Will be supported as the primary relational database for robust, production-grade data persistence.
   * **Redis:** Will be integrated for high-performance caching to reduce database load and improve response times.
 
-## 🏁 Getting Started
+## Getting Started
 
 To get a local copy up and running, please follow these steps.
 
@@ -134,7 +134,7 @@ To get a local copy up and running, please follow these steps.
     dotnet run
     ```
 
-## ❤️ Contributing
+## Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
