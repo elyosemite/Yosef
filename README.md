@@ -148,6 +148,6 @@ If you have a suggestion that would make this better, please fork the repo and c
 
 Please read our [CONTRIBUTING.md](https://www.google.com/search?q=./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
