@@ -12,7 +12,7 @@ scrape_configs:
   # A porta padrão para isso no OTel Collector é a 8889.
   - job_name: "otel-collector"
     static_configs:
-      - targets: ["otel-collector:4317"]
+      - targets: ["otel-collector:8889"]
 
   # 3. Job para monitorar sua aplicação .NET rodando no HOST
   - job_name: "yosef-app"

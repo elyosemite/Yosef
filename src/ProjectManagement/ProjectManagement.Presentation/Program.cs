@@ -130,7 +130,7 @@ public class Program
                     .AddMeter(Metrics.GreeterMeter.Name)
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
-                    .AddSqlClientInstrumentation() // TODO remover depois
+                    .AddSqlClientInstrumentation()
                     .AddPrometheusExporter(options =>
                     {
                         options.ScrapeResponseCacheDurationMilliseconds = 10000; // Cache de 10 segundos
