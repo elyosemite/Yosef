@@ -13,9 +13,9 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using Serilog.Sinks.OpenTelemetry;
-using Observability;
 using Serilog.Events;
 using System.Diagnostics;
+using ProjectManagement.Infrastructure.Metric;
 
 namespace ProjectManagement.Presentation;
 

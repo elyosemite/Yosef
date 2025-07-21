@@ -97,15 +97,18 @@ services:
   #     - myapp
   #   restart: unless-stopped
   
-  # myapp:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "80"
-  #   environment:
-  #     - ASPNETCORE_URLS=http://+:80
-  #   restart: unless-stopped
+  yosef-01:
+    build:
+      context: ./src/ProjectManagement
+      dockerfile: Dockerfile
+    container_name: yosef
+    ports:
+      - "80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    restart: unless-stopped
+    networks:
+      - monitoring-net
 
 networks:
   monitoring-net:

@@ -1,15 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
-
-COPY *.csproj ./
-RUN dotnet restore
-
+WORKDIR /src
 COPY . .
-WORKDIR /app
-RUN dotnet publish -c Release -o out
+
+WORKDIR /src/ProjectManagement.Presentation
+RUN dotnet restore
+RUN dotnet publish ProjectManagement.Presentation.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/out ./
+COPY --from=build /app/publish ./
 
-ENTRYPOINT ["dotnet", "Yosef.dll"]
+ENTRYPOINT ["dotnet", "ProjectManagement.Presentation.dll"]
