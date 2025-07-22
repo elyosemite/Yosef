@@ -81,7 +81,7 @@ public class Program
         .WriteTo.Debug()
         .WriteTo.OpenTelemetry(options =>
         {
-            options.Endpoint = "http://localhost:4317/v1/logs";
+            options.Endpoint = "http://otel-collector:4317/v1/logs";
             options.Protocol = OtlpProtocol.Grpc;
             options.ResourceAttributes = new Dictionary<string, object>
             {
@@ -116,7 +116,7 @@ public class Program
                     })
                     .AddOtlpExporter(options =>
                     {
-                        options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
+                        options.Endpoint = new Uri("http://otel-collector:4317"); // Endpoint do OpenTelemetry Collector
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     })
                     .AddConsoleExporter();
@@ -138,7 +138,7 @@ public class Program
                     })
                     .AddOtlpExporter(options =>
                     {
-                        options.Endpoint = new Uri("http://localhost:4317"); // Endpoint do OpenTelemetry Collector
+                        options.Endpoint = new Uri("http://otel-collector:4317"); // Endpoint do OpenTelemetry Collector
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     });
                     //.AddConsoleExporter();
