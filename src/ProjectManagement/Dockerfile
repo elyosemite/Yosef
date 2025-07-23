@@ -1,13 +1,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /src
-COPY . .
+WORKDIR /app
 
-WORKDIR /src/ProjectManagement.Presentation
-RUN dotnet restore
-RUN dotnet publish ProjectManagement.Presentation.csproj -c Release -o /app/publish
+COPY ["src/ProjectManagement/", "src/ProjectManagement/"]
+COPY ["dev/", "dev/"]
+
+RUN dotnet publish "src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj" -c Release -o /app/publish
+
+RUN pwsh -File dev/setup_secrets.ps1
+RUN pwsh -File dev/migrate.ps1
+RUN pwsh -File dev/seed_organization.ps1
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+COPY --from=build /app/dev ./dev
 COPY --from=build /app/publish ./
+
+RUN apt-get update && apt-get install -y unzip && \
+    curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
 ENTRYPOINT ["dotnet", "ProjectManagement.Presentation.dll"]
