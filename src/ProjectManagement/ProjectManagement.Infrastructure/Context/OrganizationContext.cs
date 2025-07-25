@@ -16,7 +16,7 @@ public class OrganizationContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite(_globalSettings.Sqlite.ConnectionString);
+        options.UseNpgsql(_globalSettings.PostgreSql.ConnectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
