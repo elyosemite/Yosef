@@ -110,6 +110,24 @@ services:
     restart: unless-stopped
     networks:
       - monitoring-net
+  
+  db:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: example123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - monitoring-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
 
 networks:
   monitoring-net:
@@ -119,3 +137,4 @@ volumes:
   grafana-storage:
   jaeger_data:
   prometheus-data:
+  pgdata:
