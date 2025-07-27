@@ -2,7 +2,8 @@
 
 param(
     [switch]$all,
-    [switch]$sqlite
+    [switch]$sqlite,
+    [switch]$postgresql
 )
 
 $scriptDir = if ($PSScriptRoot) {
@@ -15,11 +16,11 @@ $currentDir = Join-Path -Path $scriptDir -ChildPath ".."
 $ProjectManagementAPI = Join-Path -Path $currentDir -ChildPath "src/ProjectManagement/ProjectManagement.Presentation"
 
 function Get-EntityFrameworkDatabase {
-    return $sqlite
+    return $postgresql
 }
 
 if (!$all -and !$(Get-EntityFrameworkDatabase)) {
-    $sqlite = $true
+    $postgresql = $true
 }
 
 if ($all -or $(Get-EntityFrameworkDatabase)) {
@@ -39,7 +40,8 @@ function Get-UserSecrets {
 }
 
 Foreach ($item in ,@(
-    @($sqlite, "SQLite", "ProjectManagement.Infrastructure", "sqlite", 0)
+    @($sqlite, "SQLite", "ProjectManagement.Infrastructure", "sqlite", 0),
+    @($postgresql, "PostgreSQL", "ProjectManagement.Infrastructure", "postgreSql", 1)
 )) {
     if(!$item[0]) {
         continue
@@ -47,7 +49,7 @@ Foreach ($item in ,@(
 
     Set-Location "$currentDir/src/ProjectManagement/$($item[2])/"
 
-    if ($sqlite) {
+    if ($postgresql) {
         Write-Host "Starting $($item[1]) Migrations"
         $connectionString = $(Get-UserSecrets)."globalSettings:$($item[3]):connectionString"
         Write-Host "Using connection string: $($connectionString) in Migration"

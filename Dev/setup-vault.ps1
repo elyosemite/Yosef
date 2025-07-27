@@ -6,7 +6,7 @@ $env:VAULT_TOKEN = "root-token"
 vault auth enable approle
 
 # Cria uma policy básica
-vault policy write myapp-policy - <<EOF
+vault policy write myapp-policy - << EOF
 path "secret/data/myapp/*" {
   capabilities = ["read"]
 }

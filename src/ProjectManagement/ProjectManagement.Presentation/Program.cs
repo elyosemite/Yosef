@@ -160,6 +160,7 @@ public class Program
             }
 
             var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
+            Log.Information("Global settings loaded: {@GlobalSettings}", globalSettings);
             if (!globalSettings.SelfHosted)
             {
                 //builder.Services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimitOptions"));
