@@ -48,7 +48,7 @@ public class Program
 
             await Task.Delay(TimeSpan.FromSeconds(waitingTime));
         }
-        else if (randomlyChoosedNumber % 13 == 0) // It means an error
+        else if (randomlyChoosedNumber % 13 == 0)
         {
             var waitingTime = _random.Next(1, 15);
             logger.LogInformation($"Waiting {waitingTime} seconds...");
@@ -107,15 +107,15 @@ public class Program
                     .AddSource(_greeterActivitySource.Name)
                     .ConfigureResource(resource => resource
                         .AddService("Yosef", serviceInstanceId: Environment.MachineName))
-                    .AddAspNetCoreInstrumentation() // Instrumenta requisições ASP.NET Core
-                    .AddHttpClientInstrumentation() // Instrumenta chamadas HTTP
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation(p =>
                     {
                         p.SetDbStatementForText = true;
                     })
                     .AddOtlpExporter(options =>
                     {
-                        options.Endpoint = new Uri("http://otel-collector:4317"); // Endpoint do OpenTelemetry Collector
+                        options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     })
                     .AddConsoleExporter();
@@ -132,12 +132,12 @@ public class Program
                     .AddSqlClientInstrumentation()
                     .AddPrometheusExporter(options =>
                     {
-                        options.ScrapeResponseCacheDurationMilliseconds = 10000; // Cache de 10 segundos
-                        options.ScrapeEndpointPath = "/metrics"; // Caminho do endpoint de métricas
+                        options.ScrapeResponseCacheDurationMilliseconds = 10000;
+                        options.ScrapeEndpointPath = "/metrics";
                     })
                     .AddOtlpExporter(options =>
                     {
-                        options.Endpoint = new Uri("http://otel-collector:4317"); // Endpoint do OpenTelemetry Collector
+                        options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     });
                     //.AddConsoleExporter();
@@ -200,7 +200,7 @@ public class Program
                     using var activity = _greeterActivitySource.StartActivity("GreeterActivity");
                     logger.LogInformation("Sending greeting and creating organization");
 
-                    Metrics.CountGreetings.Add(1); // It goes to Prometheus
+                    Metrics.CountGreetings.Add(1);
 
                     var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
                     var mapper = app.Services.GetRequiredService<IMapper>();
@@ -210,7 +210,7 @@ public class Program
                     var org = await new CreateOrganization(organizationRepository, mapper, logger, validator).ActionAsync(req);
                     activity?.AddEvent(new ActivityEvent("The application just created one org"));
 
-                    Metrics.CountOrganizationsCreated.Add(1);  // It goes to Prometheus
+                    Metrics.CountOrganizationsCreated.Add(1);
                     activity?.SetTag("greeting", "Hello World!");
                     activity?.SetTag("organization", req.OrganizationName);
 
