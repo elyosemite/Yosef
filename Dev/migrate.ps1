@@ -34,8 +34,6 @@ if ($all -or $(Get-EntityFrameworkDatabase)) {
 # Here you can get secrets from Hashicorp Vault
 # For development purposes, you can use the secrets.json file
 function Get-UserSecrets {
-    # The dotnet cli command sometimes adds //BEGIN and //END comments to the output, Where-Object removes comments
-    # to ensure a valid json
     Write-Host "Getting the User Secrets"
     $result = dotnet user-secrets list --json --project $ProjectManagementAPI | Where-Object { $_ -notmatch "^//" } | ConvertFrom-Json
     return $result
