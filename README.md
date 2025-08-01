@@ -14,8 +14,8 @@ This project is designed to be a community-driven effort. We welcome developers 
   * **Identity Management:** Centralized identity and access management for brokerages, brokers, and other entities.
   * **Project-Based Organization:** Manage insurance sales initiatives as distinct projects (e.g., Bike Insurance, Ship Insurance).
   * **Full Insurance Lifecycle:** From quotation management to policy creation.
-  * **Asynchronous Processing:** Dedicated services for handling background jobs and event-driven communication.
-  * **High Observability:** Pre-configured stack for monitoring, logging, and tracing.
+  * **Asynchronous Processing:** Dedicated services for handling asynchronously background jobs and event-driven communication.
+  * **High Observability:** Pre-configured stack for monitoring, logging, and tracing. In this case, it uses Grafana.
   * **Enterprise-Grade Security:** Integrated with industry-standard tools for secrets and identity management.
 
 ## Architecture & Services
