@@ -118,7 +118,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: example123
+      POSTGRES_PASSWORD: example123 # criar .env para o docker com a senha
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
