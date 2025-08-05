@@ -108,11 +108,13 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=Development
     restart: unless-stopped
+    depends_on:
+      - db
     networks:
       - monitoring-net
   
   db:
-    image: postgres:14.18
+    image: postgres:17.5
     container_name: postgres
     restart: always
     ports:
