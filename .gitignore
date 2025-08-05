@@ -7,3 +7,5 @@ dev/*.db
 dev/secrets.json
 LocalDatabase.*
 src/ProjectManagement/ProjectManagement.Presentation/secrets.json
+
+.env
