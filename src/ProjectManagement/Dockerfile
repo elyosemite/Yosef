@@ -6,10 +6,12 @@ COPY ["dev/", "dev/"]
 
 RUN dotnet publish "src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj" -c Debug -o /app/publish
 
-RUN ls dev \
-    && pwsh -File dev/setup_secrets.ps1 \
-    && pwsh -File dev/migrate.ps1 --postgresql \
-    && pwsh -File dev/seed_organization.ps1
+# you must run the following commands by hand to set up the database and secrets
+
+# RUN ls dev \
+#     && pwsh -File dev/setup_secrets.ps1 \
+#     && pwsh -File dev/migrate.ps1 --postgresql \
+#     && pwsh -File dev/seed_organization.ps1
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app

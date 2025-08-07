@@ -112,7 +112,7 @@ services:
       - db
     networks:
       - monitoring-net
-  
+
   db:
     image: postgres:17.5
     container_name: postgres
@@ -130,6 +130,26 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+  
+  migrator:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    container_name: ef_migrator
+    working_dir: /src/ProjectManagement/ProjectManagement.Infrastructure
+    volumes:
+      - ./src:/src
+    depends_on:
+      - db
+    command: >
+      bash -c "
+        dotnet tool install -g dotnet-ef &&
+        export PATH=\"\$PATH:/root/.dotnet/tools\" &&
+        dotnet ef database update \
+          --project ./ProjectManagement.Infrastructure.csproj \
+          --startup-project ../ProjectManagement.Presentation/ProjectManagement.Presentation.csproj \
+          --context OrganizationContext \
+          --no-build \
+          -- \
+          \"Host=postgres;Username=postgres;Password=example123;Database=banco_docker\""
 
 networks:
   monitoring-net:

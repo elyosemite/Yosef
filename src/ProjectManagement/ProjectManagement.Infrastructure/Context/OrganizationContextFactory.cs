@@ -19,7 +19,13 @@ public class OrganizationContextFactory : IDesignTimeDbContextFactory<Organizati
         ConfigurationBinder.Bind(configuration.GetSection("GlobalSettings"), globalSettings);
 
         var optionsBuilder = new DbContextOptionsBuilder<OrganizationContext>();
-        optionsBuilder.UseNpgsql("Host=postgres;Port=5432;Username=postgres;Password=example123;Include Error Detail=true;Database=banco_docker");
+
+        if (args.Length == 0)
+        {
+            throw new ArgumentException("No connection string provided to the DbContextFactory.");
+        }
+
+        optionsBuilder.UseNpgsql(args[0]);
         optionsBuilder.UseLoggerFactory(OrganizationContext.EfLoggerFactory);
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.EnableDetailedErrors();

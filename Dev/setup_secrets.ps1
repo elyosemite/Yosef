@@ -1,5 +1,7 @@
 #!/usr/bin/env pwsh
 
+# You dont need to run this script. It will be replaced by Key Vault container in the future
+
 param (
     [switch]$clear,
     [Parameter(ValueFromRemainingArguments = $true, Position=1)]
