@@ -134,22 +134,36 @@ services:
   migrator:
     image: mcr.microsoft.com/dotnet/sdk:9.0
     container_name: ef_migrator
-    working_dir: /src/ProjectManagement/ProjectManagement.Infrastructure
+    working_dir: /app
     volumes:
-      - ./src:/src
+      - ./src/ProjectManagement:/app
     depends_on:
       - db
-    command: >
+    entrypoint: >
       bash -c "
-        dotnet tool install -g dotnet-ef &&
-        export PATH=\"\$PATH:/root/.dotnet/tools\" &&
-        dotnet ef database update \
-          --project ./ProjectManagement.Infrastructure.csproj \
-          --startup-project ../ProjectManagement.Presentation/ProjectManagement.Presentation.csproj \
-          --context OrganizationContext \
-          --no-build \
-          -- \
-          \"Host=postgres;Username=postgres;Password=example123;Database=banco_docker\""
+      if command -v dotnet >/dev/null 2>&1; then
+        echo 'dotnet está instalado.';
+      else
+        echo 'dotnet NÃO está instalado.';
+        exit 1;
+      fi &&
+
+      ls /ProjectManagement.Infrastructure &&
+
+      echo 'Instalando dotnet-ef...' &&
+      dotnet tool install --global dotnet-ef --version 9.0.8 &&
+      
+      export PATH=\"$PATH:/root/.dotnet/tools\" &&
+      echo 'Mostrando o comando' &&
+
+      dotnet-ef &&
+      echo 'Executando migração...' &&
+
+      dotnet-ef database update \
+        --project ./ProjectManagement.Infrastructure/ProjectManagement.Infrastructure.csproj \
+        --startup-project ./ProjectManagement.Presentation/ProjectManagement.Presentation.csproj \
+        --context OrganizationContext \
+        -- 'Host=postgres;Username=postgres;Password=example123;Database=banco_docker'"
 
 networks:
   monitoring-net:
