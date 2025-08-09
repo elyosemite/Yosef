@@ -142,22 +142,22 @@ services:
     entrypoint: >
       bash -c "
       if command -v dotnet >/dev/null 2>&1; then
-        echo 'dotnet está instalado.';
+        echo 'dotnet is installed in this machine';
       else
-        echo 'dotnet NÃO está instalado.';
+        echo 'dotnet is not install in this machine';
         exit 1;
       fi &&
 
       ls /ProjectManagement.Infrastructure &&
 
-      echo 'Instalando dotnet-ef...' &&
+      echo 'Installing dotnet-ef...' &&
       dotnet tool install --global dotnet-ef --version 9.0.8 &&
       
       export PATH=\"$PATH:/root/.dotnet/tools\" &&
-      echo 'Mostrando o comando' &&
+      echo 'Showing the dotnet-ef on screen' &&
 
       dotnet-ef &&
-      echo 'Executando migração...' &&
+      echo 'Running the migration...' &&
 
       dotnet-ef database update \
         --project ./ProjectManagement.Infrastructure/ProjectManagement.Infrastructure.csproj \
