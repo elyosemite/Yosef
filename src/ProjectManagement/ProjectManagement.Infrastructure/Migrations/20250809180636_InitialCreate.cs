@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,12 +16,12 @@ namespace ProjectManagement.Infrastructure.Migrations
                 name: "OrganizationDataModel",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    OrganizationName = table.Column<string>(type: "TEXT", nullable: false),
-                    ContributorsCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    Secret = table.Column<string>(type: "TEXT", nullable: true),
-                    Identifier = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrganizationName = table.Column<string>(type: "text", nullable: false),
+                    ContributorsCount = table.Column<int>(type: "integer", nullable: false),
+                    Secret = table.Column<string>(type: "text", nullable: true),
+                    Identifier = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,15 +32,14 @@ namespace ProjectManagement.Infrastructure.Migrations
                 name: "ProjectDataModel",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false),
-                    StarsCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    ForksCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    ContributorsCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    Identifier = table.Column<Guid>(type: "TEXT", nullable: false),
-                    OrganizationIdentifier = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    StarsCount = table.Column<int>(type: "integer", nullable: false),
+                    ForksCount = table.Column<int>(type: "integer", nullable: false),
+                    ContributorsCount = table.Column<int>(type: "integer", nullable: false),
+                    Identifier = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrganizationIdentifier = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {

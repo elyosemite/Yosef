@@ -69,27 +69,27 @@ public class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Information()
-        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-        .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
-        .Enrich.FromLogContext()
-        .Enrich.WithMachineName()
-        .Enrich.WithProcessId()
-        .Enrich.WithThreadId()
-        .Enrich.WithExceptionDetails()
-        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-        .WriteTo.Debug()
-        .WriteTo.OpenTelemetry(options =>
-        {
-            options.Endpoint = "http://otel-collector:4317/v1/logs";
-            options.Protocol = OtlpProtocol.Grpc;
-            options.ResourceAttributes = new Dictionary<string, object>
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            .Enrich.WithExceptionDetails()
+            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .WriteTo.Debug()
+            .WriteTo.OpenTelemetry(options =>
             {
-                { "service.name", "Yosef" },
-                { "service.instance.id", Environment.MachineName }
-            };
-        })
-        .CreateLogger();
+                options.Endpoint = "http://otel-collector:4317/v1/logs";
+                options.Protocol = OtlpProtocol.Grpc;
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    { "service.name", "Yosef" },
+                    { "service.instance.id", Environment.MachineName }
+                };
+            })
+            .CreateLogger();
 
         try
         {
@@ -103,6 +103,11 @@ public class Program
                 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
                 .AddJsonFile("secrets.json", optional: true)
                 .AddEnvironmentVariables();
+            
+            Log.Information("Arguments: {@args}", args);
+            Log.Information("Configuration loaded: {@Configuration}", builder.Configuration.AsEnumerable());
+
+            var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
 
             // Middleware
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -158,7 +163,7 @@ public class Program
                 config.Title = "Dotnet API";
                 config.Version = "v1";
             });
-            builder.Services.AddEFRepository();
+            builder.Services.AddEFRepository(globalSettings);
 
             if (builder.Environment.IsDevelopment())
             {
@@ -166,7 +171,6 @@ public class Program
                 builder.Configuration.AddUserSecrets<Program>();
             }
 
-            var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
             Log.Information("Global settings loaded: {@GlobalSettings}", globalSettings);
             if (!globalSettings.SelfHosted)
             {
@@ -208,6 +212,8 @@ public class Program
                     logger.LogInformation("Sending greeting and creating organization");
 
                     Metrics.CountGreetings.Add(1);
+
+                    Log.Information("==============> {ConnectionString}", globalSettings.PostgreSql.ConnectionString);
 
                     var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
                     var mapper = app.Services.GetRequiredService<IMapper>();
