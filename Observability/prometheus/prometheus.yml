@@ -21,4 +21,4 @@ scrape_configs:
       # 💡 'host.docker.internal' é um DNS especial que, de dentro do contêiner,
       # aponta para o IP da sua máquina (o host).
       # Troque 7252 pela porta HTTP em que sua aplicação expõe as métricas.
-      - targets: ["yosef:7252"]
+      - targets: ["yosef:8081"]
