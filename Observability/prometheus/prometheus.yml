@@ -15,10 +15,10 @@ scrape_configs:
       - targets: ["otel-collector:8889"]
 
   # 3. Job para monitorar sua aplicação .NET rodando no HOST
-  - job_name: "yosef-app"
+  - job_name: "projectmanagement-app"
     metrics_path: /metrics # Endpoint padrão exposto pela sua app .NET com OpenTelemetry
     static_configs:
       # 💡 'host.docker.internal' é um DNS especial que, de dentro do contêiner,
       # aponta para o IP da sua máquina (o host).
       # Troque 7252 pela porta HTTP em que sua aplicação expõe as métricas.
-      - targets: ["yosef:8081"]
+      - targets: ["projectmanagement:8081"]
