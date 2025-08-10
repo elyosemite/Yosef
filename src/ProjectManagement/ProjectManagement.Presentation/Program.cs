@@ -139,7 +139,7 @@ public class Program
                         .AddService("Yosef", serviceInstanceId: Environment.MachineName))
                     .AddAspNetCoreInstrumentation()
                     .AddMeter(Metrics.GreeterMeter.Name)
-                    .AddMeter(Metrics.CountGreetings.Name)
+                    .AddMeter(Metrics.CreateOrganizationMeter.Name)
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddSqlClientInstrumentation()
