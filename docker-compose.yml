@@ -48,9 +48,9 @@ services:
       - ./Observability/grafana/provisioning/:/etc/grafana/provisioning/
       - grafana-storage:/var/lib/grafana
     depends_on:
-      - loki # Garante que o Loki suba antes do Grafana
-      - jaeger # Garante que o Jaeger suba antes do Grafana
-      - prometheus # Garante que o Prometheus suba antes do Grafana
+      - loki
+      - jaeger
+      - prometheus
     networks:
       - monitoring-net
 
@@ -98,11 +98,11 @@ services:
   #     - myapp
   #   restart: unless-stopped
   
-  yosef-01:
+  projectmanagement:
     build:
       context: .
       dockerfile: ./src/ProjectManagement/Dockerfile
-    container_name: yosef
+    container_name: projectmanagement
     ports:
       - "8081:80"
     environment:
