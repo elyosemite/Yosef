@@ -61,6 +61,7 @@ services:
     ports:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP HTTP receiver
+      - "8889:8889" # Prometheus metrics receiver
     command: [--config=/etc/otel-collector-config.yml]
     volumes:
       - ./Dev/otel-collector-config.yml:/etc/otel-collector-config.yml

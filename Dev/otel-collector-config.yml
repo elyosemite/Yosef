@@ -19,8 +19,8 @@ exporters:
     endpoint: "jaeger:4317" # Exemplo para Jaeger
     tls:
       insecure: true # Desabilita TLS para desenvolvimento (não recomendado em produção)
-  # prometheus:
-  #   endpoint: "prometheus:9090" # Exemplo para Prometheus
+  prometheus:
+    endpoint: "0.0.0.0:8889" # Exemplo para Prometheus
 
 service:
   pipelines:
@@ -33,7 +33,7 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [debug, otlp] # Exemplo para Tempo/Jaeger
-    # metrics:
-    #   receivers: [otlp]
-    #   processors: [batch]
-    #   exporters: [logging, prometheus] # Exemplo para Prometheus
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus] # Exemplo para Prometheus
