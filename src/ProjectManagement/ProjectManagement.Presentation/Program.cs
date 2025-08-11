@@ -183,13 +183,19 @@ public class Program
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseOpenApi();
-                app.UseSwaggerUi(config =>
+                // app.UseOpenApi();
+                // app.UseSwaggerUi(config =>
+                // {
+                //     config.DocumentTitle = "ProjectManagement API";
+                //     config.Path = "swagger";
+                //     config.DocumentPath = "/swagger/{documentName}/swagger.json";
+                //     config.DocExpansion = "list";
+                // });
+
+                app.UseSwaggerUI(c =>
                 {
-                    config.DocumentTitle = "TodoAPI";
-                    config.Path = "/swagger";
-                    config.DocumentPath = "/swagger/{documentName}/swagger.json";
-                    config.DocExpansion = "list";
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProjectManagement API V.1");
+                    c.RoutePrefix = "swagger";
                 });
             }
 
