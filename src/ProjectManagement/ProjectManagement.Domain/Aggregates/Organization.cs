@@ -1,6 +1,8 @@
+using Yosef.ProjectManagement.Domain.Events;
+
 namespace ProjectManagement.Domain.Aggregates;
 
-public class Organization : IAggregateRoot<Guid>, ITableObject<int>
+public class Organization : EntityBase<Guid>, IAggregateRoot<Guid>, ITableObject<int>
 {
     public string Name { get; private set; }
     public int ContributorsCount { get; private set; }
@@ -17,6 +19,8 @@ public class Organization : IAggregateRoot<Guid>, ITableObject<int>
         Name = name;
         ContributorsCount = contributorsCount;
         Secret = secret;
+
+        RegisterDomainEvent(new OrganizationCreatedEvent(Identifier, Name, "Event Created", DateTime.UtcNow));
     }
 
     private Organization(Guid identifier, string name, int contributorsCount, string? secret = null)
@@ -25,6 +29,8 @@ public class Organization : IAggregateRoot<Guid>, ITableObject<int>
         Name = name;
         ContributorsCount = contributorsCount;
         Secret = secret;
+
+        RegisterDomainEvent(new OrganizationCreatedEvent(Identifier, Name, "Event Created", DateTime.UtcNow));
     }
 
     public static Organization OrganizationFactory(string name, int contributorsCount)

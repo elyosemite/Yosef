@@ -1,5 +1,4 @@
 using ProjectManagement.Domain.Aggregates;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ProjectManagement.Infrastructure.Repository;
 

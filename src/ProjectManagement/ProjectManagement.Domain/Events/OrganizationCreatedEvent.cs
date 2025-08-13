@@ -1,7 +1,7 @@
 namespace Yosef.ProjectManagement.Domain.Events;
 
-public record OrganizationCreated(
+public record OrganizationCreatedEvent(
     Guid OrganizationId,
     string Name,
     string Description,
-    DateTime CreatedAt);
+    DateTime CreatedAt) : DomainEventBase;

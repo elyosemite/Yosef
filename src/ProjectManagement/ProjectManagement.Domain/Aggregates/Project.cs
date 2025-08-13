@@ -1,6 +1,6 @@
 namespace ProjectManagement.Domain.Aggregates;
 
-public class Project : IEntity<Guid>
+public class Project : EntityBase<Guid>
 {
     public Guid Identifier { get; }
     public string Name { get; private set; }
