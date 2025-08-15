@@ -20,7 +20,7 @@ public class Organization : EntityBase<Guid>, IAggregateRoot<Guid>, ITableObject
         ContributorsCount = contributorsCount;
         Secret = secret;
 
-        RegisterDomainEvent(new OrganizationCreatedEvent(Identifier, Name, "Event Created", DateTime.UtcNow));
+        RegisterDomainEvent(new OrganizationCreatedEvent(Identifier, Name, "Organization Created Event", DateTime.UtcNow));
     }
 
     private Organization(Guid identifier, string name, int contributorsCount, string? secret = null)
@@ -29,8 +29,6 @@ public class Organization : EntityBase<Guid>, IAggregateRoot<Guid>, ITableObject
         Name = name;
         ContributorsCount = contributorsCount;
         Secret = secret;
-
-        RegisterDomainEvent(new OrganizationCreatedEvent(Identifier, Name, "Event Created", DateTime.UtcNow));
     }
 
     public static Organization OrganizationFactory(string name, int contributorsCount)
