@@ -3,6 +3,7 @@ using ProjectManagement.Infrastructure.Settings.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProjectManagement.Infrastructure.Repository;
 
 namespace ProjectManagement.Infrastructure;
 
@@ -24,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(cfg => { }, typeof(ServiceCollectionExtensions));
         services.AddSingleton(s => globalSettings);
         services.AddSingleton<IGlobalSettings, GlobalSettings>(s => globalSettings);
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
         return globalSettings;
     }
 }
