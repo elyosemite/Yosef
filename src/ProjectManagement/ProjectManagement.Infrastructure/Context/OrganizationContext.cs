@@ -4,6 +4,7 @@ using ProjectManagement.Infrastructure.Settings.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Yosef.ProjectManagement.Domain.Outbox;
 
 namespace ProjectManagement.Infrastructure.Context;
 
@@ -31,4 +32,5 @@ public class OrganizationContext : DbContext
     }
 
     public DbSet<OrganizationDataModel> Organization { get; set; }
+    public DbSet<OutboxMessage> OutboxMessage { get; set; }
 }
