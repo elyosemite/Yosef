@@ -2,6 +2,8 @@ using ProjectManagement.Domain.Aggregates;
 using ProjectManagement.Infrastructure;
 using AutoMapper;
 using FluentValidation;
+using Yosef.ProjectManagement.Domain.Outbox;
+using System.Text.Json;
 
 namespace ProjectManagement.Presentation.Endpoints.CreateOrganization;
 
@@ -43,6 +45,21 @@ public class CreateOrganization
         var organization = Organization.OrganizationFactory(req.OrganizationName, req.ContributorsCount);
 
         organization.UpdateSecret(req.Secret!);
+
+        // Capture the Domain Events
+        var domainEvents = organization.DomainEvents.AsEnumerable();
+
+        foreach (var domainEvent in domainEvents)
+        {
+            // Create the Outbox Message
+            _logger.LogInformation("Domain Event: {@DomainEvent}", domainEvent);
+            var outboxMessage = new OutboxMessage
+            {
+                Type = domainEvent.GetType().FullName!,
+                Payload = JsonSerializer.Serialize(domainEvent),
+                OccurredOn = DateTime.UtcNow
+            };
+        }
 
         var result = await _organizationRepository.CreateAsync(organization);
 
