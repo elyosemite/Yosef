@@ -24,16 +24,9 @@ public class OrganizationContextFactory : IDesignTimeDbContextFactory<Organizati
         var globalSettings = new GlobalSettings();
         ConfigurationBinder.Bind(configuration.GetSection("GlobalSettings"), globalSettings);
         Log.Information("Connection string: {@ConnectionString}", globalSettings.PostgreSql.ConnectionString);
-        Log.Information("Load command line arguments: {@args}", args);
-        Log.Information("GlobalSettings loaded: {@GlobalSettings}", globalSettings);
 
         var optionsBuilder = new DbContextOptionsBuilder<OrganizationContext>();
-
-        if (args.Length == 0)
-        {
-            throw new ArgumentException("No connection string provided to the DbContextFactory.");
-        }
-        Log.Information("Using connection string: {ConnectionString} in OrganizationContextFactory", args[0]);
+        
         optionsBuilder.UseNpgsql(globalSettings.PostgreSql.ConnectionString);
         optionsBuilder.UseLoggerFactory(OrganizationContext.EfLoggerFactory);
         optionsBuilder.EnableSensitiveDataLogging();
