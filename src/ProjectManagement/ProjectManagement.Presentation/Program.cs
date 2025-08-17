@@ -16,6 +16,11 @@ using Serilog.Sinks.OpenTelemetry;
 using Serilog.Events;
 using System.Diagnostics;
 using ProjectManagement.Infrastructure.Metric;
+using ProjectManagement.Application.Repository;
+using Mediator;
+using Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using ProjectManagement.Application;
 
 namespace ProjectManagement.Presentation;
 
@@ -129,8 +134,8 @@ public class Program
                     {
                         options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
-                    })
-                    .AddConsoleExporter();
+                    });
+                    //.AddConsoleExporter();
             })
             .WithMetrics(meterProviderBuilder =>
             {
@@ -165,6 +170,14 @@ public class Program
                 config.Version = "v1";
             });
             builder.Services.AddEFRepository(globalSettings);
+            builder.Services.AddApplication();
+            builder.Services.AddMediator(
+                (MediatorOptions options) =>
+                {
+                    options.Assemblies = [typeof(Program)];
+                    options.ServiceLifetime = ServiceLifetime.Scoped;
+                }
+            );
 
             if (builder.Environment.IsDevelopment())
             {
@@ -257,6 +270,20 @@ public class Program
                     return org;
                 })
                 .WithName("GetOrganization")
+                .Produces(StatusCodes.Status400BadRequest);
+            
+            organization.MapPost("/id", async ([FromBody] UpdateOrganizationNameRequest req, ILogger<GetOrganization> logger, IMediator mediator) =>
+                {
+                    using var activity = _greeterActivitySource.StartActivity("UpdateOrganization");
+                    logger.LogInformation("Get organization by id = {@req}", req);
+
+                    activity?.SetTag("organizationId", req);
+
+                    var response = await mediator.Send(req);
+
+                    return response;
+                })
+                .WithName("UpdateOrganizationName")
                 .Produces(StatusCodes.Status400BadRequest);
 
             app.MapPrometheusScrapingEndpoint();
