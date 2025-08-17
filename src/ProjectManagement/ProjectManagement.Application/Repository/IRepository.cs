@@ -1,6 +1,6 @@
 using ProjectManagement.Domain.Aggregates;
 
-namespace ProjectManagement.Infrastructure.Repository;
+namespace ProjectManagement.Applciation.Repository;
 
 public interface IRepository<TAggregate, TAggregateId>
     where TAggregateId : IEquatable<TAggregateId>

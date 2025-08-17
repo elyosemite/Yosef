@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectManagement.Infrastructure.Settings.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using ProjectManagement.Application.Repository;
 
 namespace ProjectManagement.Infrastructure;
 

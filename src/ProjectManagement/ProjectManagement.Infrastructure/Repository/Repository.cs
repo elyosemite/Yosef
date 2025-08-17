@@ -3,6 +3,8 @@ using ProjectManagement.Domain.Aggregates;
 using ProjectManagement.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectManagement.Applciation.Repository;
+using Microsoft.Extensions.Logging;
 
 namespace ProjectManagement.Infrastructure.Repository;
 
@@ -12,10 +14,12 @@ public abstract class Repository<TAggregate, TDataModel, TAggregateId, TDataMode
     where TAggregateId : IEquatable<TAggregateId>
     where TDataModelId : IEquatable<TDataModelId>
 {
-    public Repository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, Func<OrganizationContext, DbSet<TDataModel>> getDbSet)
+    private readonly ILogger<Repository<TAggregate, TDataModel, TAggregateId, TDataModelId>> _logger;
+    public Repository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, Func<OrganizationContext, DbSet<TDataModel>> getDbSet, ILogger<Repository<TAggregate, TDataModel, TAggregateId, TDataModelId>> logger)
         : base(serviceScopeFactory, mapper)
     {
         GetDbSet = getDbSet;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected Func<OrganizationContext, DbSet<TDataModel>> GetDbSet { get; private set; }
@@ -60,7 +64,7 @@ public abstract class Repository<TAggregate, TDataModel, TAggregateId, TDataMode
             var entity = await GetDbSet(dbContext).FindAsync(obj.Id);
             if (entity != null)
             {
-                var mappedEntity = Mapper.Map<TAggregate>(obj);
+                var mappedEntity = Mapper.Map<TDataModel>(obj);
                 dbContext.Entry(entity).CurrentValues.SetValues(mappedEntity);
                 await dbContext.SaveChangesAsync();
             }
