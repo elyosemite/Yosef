@@ -1,5 +1,5 @@
+using ProjectManagement.Application.Repository;
 using ProjectManagement.Domain.Aggregates;
-using ProjectManagement.Infrastructure;
 
 namespace ProjectManagement.Presentation.Endpoints.CreateProject;
 
