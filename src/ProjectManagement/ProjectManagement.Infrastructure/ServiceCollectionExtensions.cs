@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(s => globalSettings);
         services.AddSingleton<IGlobalSettings, GlobalSettings>(s => globalSettings);
         services.AddScoped<IOutboxRepository, OutboxRepository>();
+
         return globalSettings;
     }
 }
