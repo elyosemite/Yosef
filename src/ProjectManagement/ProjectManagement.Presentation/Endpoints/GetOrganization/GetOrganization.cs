@@ -1,5 +1,4 @@
-using AutoMapper;
-using ProjectManagement.Infrastructure;
+using ProjectManagement.Application.Repository;
 
 namespace ProjectManagement.Presentation.Endpoints.GetOrganization;
 
