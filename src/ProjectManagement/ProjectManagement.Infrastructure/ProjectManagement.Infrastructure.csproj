@@ -17,7 +17,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
@@ -45,5 +44,6 @@
   </ItemGroup>
 <ItemGroup>
   <ProjectReference Include="..\ProjectManagement.Domain\ProjectManagement.Domain.csproj" />
+  <ProjectReference Include="..\ProjectManagement.Application\ProjectManagement.Application.csproj" />
 </ItemGroup>
 </Project>

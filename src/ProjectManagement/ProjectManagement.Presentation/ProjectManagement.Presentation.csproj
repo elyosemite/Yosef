@@ -39,6 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ProjectManagement.Domain\ProjectManagement.Domain.csproj" />
     <ProjectReference Include="..\ProjectManagement.Infrastructure\ProjectManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\ProjectManagement.Application\ProjectManagement.Application.csproj" />
   </ItemGroup>
 
 </Project>
