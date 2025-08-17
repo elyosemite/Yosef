@@ -2,7 +2,7 @@ namespace Yosef.ProjectManagement.Domain.Outbox;
 
 public sealed class OutboxMessage
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime OccurredOn { get; init; }
     public string Type { get; init; } = default!;
     public string Payload { get; init; } = default!;
