@@ -56,10 +56,49 @@ function Add-RandomOrganizations {
         }
 
         try {
-            $response = Invoke-RestMethod -Uri $Url -Method Post -ContentType "application/json" -Body $body
+            $resp = Invoke-RestMethod -Uri $Url -Method Post -ContentType "application/json" -Body $body
         } catch {
             Write-Host "Erro ao enviar requisição: $_"
         }
+    }
+}
+
+function Get-By-OrganizationIdentifier {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$OrganizationIdentifier
+    )
+    $UrlWithId = "http://localhost/api/project-management/organization/organization?req=$OrganizationIdentifier"
+    Write-Host $UrlWithId
+    try {
+        $response = Invoke-RestMethod -Uri $UrlWithId -Method Get -ContentType "application/json"
+        return $response
+    } catch {
+        Write-Host "Erro ao obter organização: $_"
+        return $null
+    }
+}
+
+function Update-OrganizationName {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$OrganizationIdentifier,
+        [Parameter(Mandatory=$true)]
+        [string]$OrganizationName
+    )
+    $UrlWithId = "http://localhost/api/project-management/organization/id?req=$OrganizationIdentifier"
+    Write-Host $UrlWithId
+    try {
+        $body = @{
+            OrganizationName = $OrganizationName
+            OrganizationId = $OrganizationIdentifier
+        } | ConvertTo-Json
+
+        $response = Invoke-RestMethod -Uri $UrlWithId -Method Post -ContentType "application/json" -Body $body
+        return $response
+    } catch {
+        Write-Host "Erro ao obter organização: $_"
+        return $null
     }
 }
 
