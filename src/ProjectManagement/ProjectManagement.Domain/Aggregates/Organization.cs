@@ -69,6 +69,15 @@ public class Organization : EntityBase<Guid>, IAggregateRoot<Guid>, ITableObject
         _projects.Add(project);
     }
 
+    [Obsolete("Remember the raise event when update the org name")]
+    public void UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Organization name cannot be empty.", nameof(name));
+
+        Name = name;
+    }
+
     public void UpdateTableRegisterId(int id)
     {
         Id = id;
