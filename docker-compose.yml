@@ -149,6 +149,18 @@ services:
       - monitoring-net
     depends_on:
       - db
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # porta para conexões AMQP
+      - "15672:15672"   # porta para painel de administração
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - monitoring-net
 
 networks:
   monitoring-net:
