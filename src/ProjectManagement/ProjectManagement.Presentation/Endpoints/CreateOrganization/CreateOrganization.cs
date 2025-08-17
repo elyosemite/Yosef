@@ -1,9 +1,9 @@
 using ProjectManagement.Domain.Aggregates;
-using ProjectManagement.Infrastructure;
 using AutoMapper;
 using FluentValidation;
 using Yosef.ProjectManagement.Domain.Outbox;
 using System.Text.Json;
+using ProjectManagement.Application.Repository;
 
 namespace ProjectManagement.Presentation.Endpoints.CreateOrganization;
 
