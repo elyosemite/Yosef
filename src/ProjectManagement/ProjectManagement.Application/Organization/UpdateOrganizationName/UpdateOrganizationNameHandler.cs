@@ -1,10 +1,8 @@
-using System.Text.Json;
 using FluentValidation;
 using Mediator;
 using Microsoft.Extensions.Logging;
 using ProjectManagement.Applciation.Repository;
 using ProjectManagement.Application.Repository;
-using Yosef.ProjectManagement.Domain.Outbox;
 
 namespace Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
 
@@ -56,16 +54,9 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
         await _organizationRepository.UpsertAsync(organization);
         _logger.LogInformation("Organization name updated to: {OrganizationName}", organization.Name);
 
-        // Publish an event to notify other parts of the system about the organization name change
         var domainEvents = organization.DomainEvents;
         _logger.LogInformation("Publishing domain events for organization ID: {OrganizationId}", organization.Identifier);
-        foreach (var domainEvent in domainEvents)
-        {
-            // Create the Outbox Message
-            _logger.LogInformation("Domain Event: {@DomainEvent}", domainEvent);
-            
-            await _outboxRepository.AddAsync(domainEvent);
-        }
+        await StoreDomainEventAsync(domainEvents);
 
         UpdateOrganizationNameResponse org = new()
         {
@@ -76,5 +67,15 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
         _logger.LogInformation("Update successfully organization name: {Title}", org.OrganizationName);
 
         return org;
+    }
+
+    private async Task StoreDomainEventAsync(IReadOnlyCollection<Domain.Events.DomainEventBase> domainEvents)
+    {
+        foreach (var domainEvent in domainEvents)
+        {
+            _logger.LogInformation("Domain Event: {@DomainEvent}", domainEvent);
+
+            await _outboxRepository.AddAsync(domainEvent);
+        }
     }
 }
