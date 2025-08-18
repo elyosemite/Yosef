@@ -19,7 +19,6 @@ using ProjectManagement.Infrastructure.Metric;
 using ProjectManagement.Application.Repository;
 using Mediator;
 using Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using ProjectManagement.Application;
 
 namespace ProjectManagement.Presentation;

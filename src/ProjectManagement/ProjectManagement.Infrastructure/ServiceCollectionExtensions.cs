@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProjectManagement.Infrastructure.Repository;
+using ProjectManagement.Applciation.Repository;
 
 namespace ProjectManagement.Infrastructure;
 

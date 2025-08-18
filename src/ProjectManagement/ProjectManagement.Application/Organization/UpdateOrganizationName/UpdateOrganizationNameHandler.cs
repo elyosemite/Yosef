@@ -1,7 +1,10 @@
+using System.Text.Json;
 using FluentValidation;
 using Mediator;
 using Microsoft.Extensions.Logging;
+using ProjectManagement.Applciation.Repository;
 using ProjectManagement.Application.Repository;
+using Yosef.ProjectManagement.Domain.Outbox;
 
 namespace Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
 
@@ -10,15 +13,18 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
     private readonly ILogger<UpdateOrganizationNameHandler> _logger;
     private readonly IValidator<UpdateOrganizationNameRequest> _validator;
     private readonly IOrganizationRepository _organizationRepository;
+    private readonly IOutboxRepository _outboxRepository;
 
     public UpdateOrganizationNameHandler(
         ILogger<UpdateOrganizationNameHandler> logger,
         IValidator<UpdateOrganizationNameRequest> validator,
-        IOrganizationRepository organizationRepository)
+        IOrganizationRepository organizationRepository,
+        IOutboxRepository outboxRepository)
     {
         _logger = logger;
         _validator = validator;
         _organizationRepository = organizationRepository;
+        _outboxRepository = outboxRepository;
     }
 
     public async ValueTask<UpdateOrganizationNameResponse> Handle(UpdateOrganizationNameRequest request, CancellationToken cancellationToken)
@@ -49,6 +55,17 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
 
         await _organizationRepository.UpsertAsync(organization);
         _logger.LogInformation("Organization name updated to: {OrganizationName}", organization.Name);
+
+        // Publish an event to notify other parts of the system about the organization name change
+        var domainEvents = organization.DomainEvents;
+        _logger.LogInformation("Publishing domain events for organization ID: {OrganizationId}", organization.Identifier);
+        foreach (var domainEvent in domainEvents)
+        {
+            // Create the Outbox Message
+            _logger.LogInformation("Domain Event: {@DomainEvent}", domainEvent);
+            
+            await _outboxRepository.AddAsync(domainEvent);
+        }
 
         UpdateOrganizationNameResponse org = new()
         {

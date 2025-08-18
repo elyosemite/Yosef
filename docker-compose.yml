@@ -161,6 +161,19 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     networks:
       - monitoring-net
+  
+  eventprocessor:
+    build: 
+      context: ./src/EventProcessor
+      dockerfile: Dockerfile
+    container_name: event_processor
+    networks:
+      - monitoring-net
+    depends_on:
+      - db
+      - rabbitmq
+      - migrator
+      - projectmanagement
 
 networks:
   monitoring-net:

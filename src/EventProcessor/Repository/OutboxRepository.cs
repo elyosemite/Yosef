@@ -1,24 +1,18 @@
 using System.Text.Json;
 using Dapper;
-using Microsoft.Extensions.Logging;
+using EventProcessor.Settings.Interfaces;
 using Npgsql;
-using ProjectManagement.Applciation.Repository;
-using ProjectManagement.Infrastructure.Settings.Interfaces;
-using Yosef.ProjectManagement.Domain.Events;
-using Yosef.ProjectManagement.Domain.Outbox;
 
-namespace ProjectManagement.Infrastructure.Repository;
+namespace EventProcessor.Repository;
 
 public sealed class OutboxRepository : IOutboxRepository
 {
     private readonly string _connectionString;
-    private readonly ILogger<OutboxRepository> _logger;
 
-    public OutboxRepository(IGlobalSettings globalSettings, ILogger<OutboxRepository> logger)
+    public OutboxRepository(IGlobalSettings globalSettings)
     {
         _connectionString = globalSettings.PostgreSql.ConnectionString
                             ?? throw new ArgumentNullException(nameof(globalSettings.PostgreSql.ConnectionString), "Outbox connection string cannot be null.");
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
     }
 
     public async Task AddAsync(DomainEventBase domainEvent, CancellationToken ct = default)
@@ -34,8 +28,6 @@ public sealed class OutboxRepository : IOutboxRepository
             INSERT INTO ""OutboxMessage"" 
             (""Id"", ""OccurredOn"", ""Type"", ""Payload"") 
             VALUES (@Id, @OccurredOn, @Type, @Payload)";
-        
-        _logger.LogInformation("Adding outbox message for event type: {EventType}", message.Type);
 
         await using var conn = new NpgsqlConnection(_connectionString);
         await conn.ExecuteAsync(new CommandDefinition(sql, message, cancellationToken: ct));
@@ -56,6 +48,13 @@ public sealed class OutboxRepository : IOutboxRepository
     public async Task MarkProcessedAsync(Guid id, CancellationToken ct = default)
     {
         const string sql = @"UPDATE ""OutboxMessage"" SET ""ProcessedOn"" = @Now WHERE ""Id"" = @Id";
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.ExecuteAsync(new CommandDefinition(sql, new { Now = DateTime.UtcNow, Id = id }, cancellationToken: ct));
+    }
+
+    public async Task MarkOccurredAsync(Guid id, CancellationToken ct = default)
+    {
+        const string sql = @"UPDATE ""OutboxMessage"" SET ""Occured"" = @Now WHERE ""Id"" = @Id";
         await using var conn = new NpgsqlConnection(_connectionString);
         await conn.ExecuteAsync(new CommandDefinition(sql, new { Now = DateTime.UtcNow, Id = id }, cancellationToken: ct));
     }

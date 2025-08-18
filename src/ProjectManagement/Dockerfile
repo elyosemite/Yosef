@@ -6,21 +6,14 @@ COPY ["dev/", "dev/"]
 
 RUN dotnet publish "src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj" -c Debug -o /app/publish
 
-# you must run the following commands by hand to set up the database and secrets
-
-# RUN ls dev \
-#     && pwsh -File dev/setup_secrets.ps1 \
-#     && pwsh -File dev/migrate.ps1 --postgresql \
-#     && pwsh -File dev/seed_organization.ps1
-
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/dev ./dev
 COPY --from=build /app/publish ./
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends unzip \
-    && apt-get install -y --no-install-recommends curl \
-    && curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
+# RUN apt-get update \
+#     && apt-get install -y --no-install-recommends unzip \
+#     && apt-get install -y --no-install-recommends curl \
+#     && curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
 ENTRYPOINT ["dotnet", "ProjectManagement.Presentation.dll"]

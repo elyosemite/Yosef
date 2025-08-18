@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-ProjectManagement.Worker-75fa8788-99d5-4c52-88aa-b77f604a61ff</UserSecretsId>
+    <UserSecretsId>dotnet-eventprocessor.Worker-75fa8788-99d5-4c52-88aa-b77f604a61ff</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,9 +17,5 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ProjectManagement.Infrastructure\ProjectManagement.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

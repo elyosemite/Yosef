@@ -1,7 +1,7 @@
 using Yosef.ProjectManagement.Domain.Events;
 using Yosef.ProjectManagement.Domain.Outbox;
 
-namespace ProjectManagement.Infrastructure.Repository;
+namespace ProjectManagement.Applciation.Repository;
 
 public interface IOutboxRepository
 {
