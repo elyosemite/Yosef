@@ -1,6 +1,5 @@
 using EventProcessor.Repository;
 using Mediator;
-using RabbitMQ.Client;
 using System.Text.Json;
 
 namespace EventProcessor.Worker;
@@ -9,7 +8,6 @@ public sealed class EventProcessorWorker : BackgroundService
 {
     private readonly IServiceProvider _sp;
     private readonly ILogger<EventProcessorWorker> _logger;
-    private IConnection _rabbitConnection;
     private readonly IOutboxRepository _outboxRepository;
 
     public EventProcessorWorker(IServiceProvider sp, ILogger<EventProcessorWorker> logger, IOutboxRepository outboxRepository)
@@ -22,22 +20,6 @@ public sealed class EventProcessorWorker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Outbox Worker iniciado.");
-
-        if (_rabbitConnection.IsOpen)
-        {
-            _logger.LogInformation("Connection established with RabbitMQ.");
-        }
-        else
-        {
-            _logger.LogInformation("Connecting to RabbitMQ...");
-            var factory = new ConnectionFactory
-            {
-                HostName = "rabbitmq",
-                UserName = "guest",
-                Password = "guest"
-            };
-            _rabbitConnection = await factory.CreateConnectionAsync();
-        }
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -80,11 +62,5 @@ public sealed class EventProcessorWorker : BackgroundService
 
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
-    }
-    
-    public override void Dispose()
-    {
-        _rabbitConnection.Dispose();
-        base.Dispose();
     }
 }
