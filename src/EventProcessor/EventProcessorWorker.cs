@@ -1,6 +1,7 @@
 using EventProcessor.Repository;
 using Mediator;
 using System.Text.Json;
+using EventProcessor.Events;
 
 namespace EventProcessor.Worker;
 
@@ -32,7 +33,7 @@ public sealed class EventProcessorWorker : BackgroundService
 
                 var messages = await _outboxRepository.GetPendingAsync(20, stoppingToken);
 
-                _logger.LogInformation("Found {@messages} pending messages in Outbox.", messages);
+                _logger.LogInformation("Found pending messages in Outbox.");
 
                 if (!messages.Any()) return;
 
@@ -59,8 +60,6 @@ public sealed class EventProcessorWorker : BackgroundService
             {
                 _logger.LogError(ex, "Erro no loop principal do OutboxWorker");
             }
-
-            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
 }

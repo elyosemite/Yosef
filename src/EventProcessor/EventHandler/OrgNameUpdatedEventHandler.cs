@@ -1,5 +1,5 @@
+using EventProcessor.Events;
 using EventProcessor.RabbitMQ;
-using EventProcessor.Worker;
 using Mediator;
 
 namespace EventProcessor.EventHandler;

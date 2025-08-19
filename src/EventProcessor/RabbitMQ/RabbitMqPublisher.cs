@@ -14,7 +14,7 @@ public class RabbitMqPublisher : IRabbitMqPublisher, IAsyncDisposable
     public IConnection Connection { get => _connection; set => _connection = value; }
     public IChannel Channel { get => _channel; set => _channel = value; }
 
-    public RabbitMqPublisher(string hostname = "localhost", string queueName = "domain_events")
+    public RabbitMqPublisher(string hostname = "rabbitmq", string queueName = "domain_events")
     {
         _hostname = hostname;
         _queueName = queueName;
@@ -29,7 +29,6 @@ public class RabbitMqPublisher : IRabbitMqPublisher, IAsyncDisposable
             UserName = "guest"
         };
         
-        // CreateConnectionAsync is assynchronous
         Connection = await factory.CreateConnectionAsync();
         Channel = await Connection.CreateChannelAsync();
 

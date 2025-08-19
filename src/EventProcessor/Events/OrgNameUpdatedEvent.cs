@@ -1,8 +1,8 @@
 using Mediator;
 
-namespace EventProcessor.Worker;
+namespace EventProcessor.Events;
 
-public class OrgNameUpdatedEvent : INotification
+public class OrgNameUpdatedEvent : DomainEventBase, INotification
 {
     public Guid OrganizationId { get; }
     public string OrganizationName { get; }
