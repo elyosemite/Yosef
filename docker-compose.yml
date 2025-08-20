@@ -119,6 +119,24 @@ services:
       - migrator
     networks:
       - monitoring-net
+  
+  quotation:
+    build:
+      context: .
+      dockerfile: ./src/Quotation/Dockerfile
+    container_name: quotation
+    ports:
+      - "8081:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Development
+      - GlobalSettings__PostgreSql__ConnectionString=${GlobalSettings__PostgreSql__ConnectionString}
+    restart: unless-stopped
+    depends_on:
+      - db
+      - migrator
+    networks:
+      - monitoring-net
 
   db:
     image: postgres:17.5
