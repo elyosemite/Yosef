@@ -102,5 +102,21 @@ function Update-OrganizationName {
     }
 }
 
+function Add-Quotation {
+    $body = @{
+        CustomerName = "Yuri"
+        ProductName = "My quotation"
+        Price = 100.00
+    } | ConvertTo-Json
+    
+    $QuotationUrl = "http://localhost/api/quotation/create"
+
+    try {
+        $resp = Invoke-RestMethod -Uri $QuotationUrl -Method Post -ContentType "application/json" -Body $body
+    } catch {
+        Write-Host "Erro ao enviar requisição: $_"
+    }
+}
+
 # Exemplo de uso:
 # Add-RandomOrganizations -Count
