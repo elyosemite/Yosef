@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0
 WORKDIR /app
 COPY ./src/ProjectManagement /app
+COPY ./src/Quotation /app
 COPY ./dev/migrate.sh /app/migrate.sh
 RUN chmod +x /app/migrate.sh
 ENTRYPOINT ["bash", "/app/migrate.sh"]
