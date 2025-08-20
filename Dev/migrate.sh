@@ -10,6 +10,10 @@ else
     exit 1;
 fi
 
+echo "Listing the contents of the current directory:"
+ls ./
+
+echo "Listing the contents of the ProjectManagement.Infrastructure directory:"
 ls ./ProjectManagement.Infrastructure
 
 echo "Installing dotnet-ef..."
@@ -20,11 +24,17 @@ export PATH="$PATH:/root/.dotnet/tools"
 echo "Showing the dotnet-ef on screen"
 dotnet-ef
 
-echo "Running the migration..."
+echo "Running the migration for the ProjectManagement..."
 dotnet-ef database update \
     --project ./ProjectManagement.Infrastructure/ProjectManagement.Infrastructure.csproj \
     --startup-project ./ProjectManagement.Presentation/ProjectManagement.Presentation.csproj \
     --context OrganizationContext \
+    -- "GlobalSettings:PostgreSql:ConnectionString=\"Host=postgres;Username=postgres;Password=example123;Database=banco_docker\""
+
+echo "Running the migration for the Quotation..."
+dotnet-ef database update \
+    --startup-project ./Quotation.Presentation/Quotation.Presentation.csproj \
+    --context QuotationContext \
     -- "GlobalSettings:PostgreSql:ConnectionString=\"Host=postgres;Username=postgres;Password=example123;Database=banco_docker\""
 
 echo "=== Migration completed successfully ==="
