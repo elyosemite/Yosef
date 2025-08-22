@@ -46,6 +46,7 @@ services:
       - "3000:3000" # Porta do Grafana
     volumes:
       - ./Observability/grafana/provisioning/:/etc/grafana/provisioning/
+      - ./Observability/grafana/dashboards:/var/lib/grafana/dashboards
       - grafana-storage:/var/lib/grafana
     depends_on:
       - loki
