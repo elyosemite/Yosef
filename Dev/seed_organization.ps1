@@ -1,5 +1,5 @@
 param(
-    [string]$Url = "http://localhost/api/project-management/organization/organization"
+    [string]$Url = "http://localhost/api/project-management/organization"
 )
 
 # Arrays de nomes e segredos
@@ -50,13 +50,10 @@ function Add-RandomOrganizations {
             secret = $Secret
         } | ConvertTo-Json
 
-        
-        if ($i % 1 -eq 0) {
-            Write-Host "`n[$i/$Count] Enviando requisição POST para $Url..."
-        }
-
         try {
+            Write-Host $Url
             $resp = Invoke-RestMethod -Uri $Url -Method Post -ContentType "application/json" -Body $body
+            Write-Host $resp
         } catch {
             Write-Host "Erro ao enviar requisição: $_"
         }
