@@ -1,82 +1,149 @@
+using System.Diagnostics;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Quotation.Infrastructure.Metric;
 using Quotation.Presentation;
 using Quotation.Presentation.Domain;
 using Quotation.Presentation.Infrastructure;
 using Quotation.Presentation.Infrastructure.Model;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
+using Serilog.Sinks.OpenTelemetry;
 
-var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddQuotationInfrastructure(builder.Configuration);
-
-builder.Services.AddSwaggerGen(c =>
+public class Program
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
+    public static readonly ActivitySource _activitySource = new ActivitySource("ApplicationBeginning");
+
+    public static void Main(string[] args)
     {
-        Title = "Quotation API",
-        Version = "v1",
-        Description = "Exemplo de API usando .NET 9 com Swagger (OpenAPI)",
-        Contact = new OpenApiContact
+        Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .Enrich.WithProcessId()
+                    .Enrich.WithThreadId()
+                    .Enrich.WithExceptionDetails()
+                    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    .WriteTo.Debug()
+                    .WriteTo.OpenTelemetry(options =>
+                    {
+                        options.Endpoint = "http://otel-collector:4317/v1/logs";
+                        options.Protocol = OtlpProtocol.Grpc;
+                        options.ResourceAttributes = new Dictionary<string, object>
+                        {
+                            { "service.name", "quotation" },
+                            { "service.instance.id", Environment.MachineName }
+                        };
+                    })
+                    .CreateLogger();
+
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+        builder.Services.AddOpenApi();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddQuotationInfrastructure(builder.Configuration);
+        builder.Services.AddSwaggerGen(c =>
         {
-            Name = "Seu Nome",
-            Email = "seuemail@dominio.com"
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Quotation API",
+                Version = "v1",
+                Description = "Exemplo de API usando .NET 9 com Swagger (OpenAPI)",
+                Contact = new OpenApiContact
+                {
+                    Name = "Seu Nome",
+                    Email = "seuemail@dominio.com"
+                }
+            });
+        });
+
+        builder.Services.AddOpenTelemetry()
+            .WithTracing(tracerProviderBuilder =>
+            {
+                tracerProviderBuilder
+                    .AddSource("Yosef")
+                    .AddSource(_activitySource.Name)
+                    .ConfigureResource(resource => resource
+                        .AddService("Yosef", serviceInstanceId: Environment.MachineName))
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation(p =>
+                    {
+                        p.SetDbStatementForText = true;
+                    })
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://otel-collector:4317");
+                        options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                    });
+                //.AddConsoleExporter();
+            })
+            .WithMetrics(meterProviderBuilder =>
+            {
+                meterProviderBuilder
+                    .ConfigureResource(resource => resource
+                        .AddService("Quotation", serviceInstanceId: Environment.MachineName))
+                    .AddAspNetCoreInstrumentation()
+                    .AddMeter(Metrics.QuotationMeter.Name)
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddSqlClientInstrumentation()
+                    .AddPrometheusExporter(options =>
+                    {
+                        options.ScrapeResponseCacheDurationMilliseconds = 10000;
+                        options.ScrapeEndpointPath = "/metrics";
+                    })
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://otel-collector:4317");
+                        options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                    });
+                //.AddConsoleExporter();
+            });
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Quotation API v1");
+                c.RoutePrefix = "/api/quotation";
+            });
         }
-    });
-});
 
-var app = builder.Build();
+        app.UseHttpsRedirection();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Quotation API v1");
-        c.RoutePrefix = "/api/quotation";
-    });
-}
+        var summaries = new[]
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
-app.UseHttpsRedirection();
+        app.MapPost("/create", async ([FromBody] QuotationDataModel request, IQuotationRepository repository, IMapper mapper) =>
+        {
+            var domain = mapper.Map<QuotationDomain>(request);
+            var result = await repository.CreateAsync(domain);
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+            Metrics.CountQuotation.Add(1);
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+            return Results.Ok(result);
+        })
+        .WithName("quotation");
 
-app.MapPost("/create", async ([FromBody] QuotationDataModel request, IQuotationRepository repository, IMapper mapper) =>
-{
-    var domain = mapper.Map<QuotationDomain>(request);
-    var result = await repository.CreateAsync(domain);
-    return Results.Ok(result);
-})
-.WithName("goo");
+        app.Run();
 
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
 }
