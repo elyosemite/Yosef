@@ -56,7 +56,7 @@ services:
 
   # OpenTelemetry Collector para receber logs (e traces/metrics)
   otel-collector:
-    image: otel/opentelemetry-collector-contrib
+    image: otel/opentelemetry-collector-contrib:0.123.0
     container_name: otel-collector
     ports:
       - "4317:4317" # OTLP gRPC receiver
@@ -89,7 +89,7 @@ services:
   
   nginx:
     image: nginx:latest
-    container_name: proxy_reverse
+    container_name: reverse_proxy
     ports:
       - "80:80"
     volumes:
