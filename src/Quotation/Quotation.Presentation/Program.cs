@@ -11,6 +11,7 @@ using Quotation.Presentation.Domain;
 using Quotation.Presentation.Infrastructure;
 using Quotation.Presentation.Infrastructure.Model;
 using Serilog;
+using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Sinks.OpenTelemetry;
@@ -23,27 +24,31 @@ public class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .MinimumLevel.Override("Minecraft.EntityFrameworkCore", LogEventLevel.Information)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithProcessId()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithExceptionDetails()
-                    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                    .WriteTo.Debug()
-                    .WriteTo.OpenTelemetry(options =>
-                    {
-                        options.Endpoint = "http://otel-collector:4317/v1/logs";
-                        options.Protocol = OtlpProtocol.Grpc;
-                        options.ResourceAttributes = new Dictionary<string, object>
-                        {
-                            { "service.name", "quotation" },
-                            { "service.instance.id", Environment.MachineName }
-                        };
-                    })
-                    .CreateLogger();
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            .Enrich.WithSpan()
+            .Enrich.WithProperty("TraceFlags", () => Activity.Current?.ActivityTraceFlags.ToString())
+            .Enrich.WithProperty("ParentSpanId", () => Activity.Current?.ParentSpanId.ToString())
+            .Enrich.WithExceptionDetails()
+            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} " +
+                                     "traceId={TraceId} spanId={SpanId}{NewLine}{Exception}")
+            .WriteTo.Debug()
+            .WriteTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = "http://otel-collector:4317/v1/logs";
+                options.Protocol = OtlpProtocol.Grpc;
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    { "service.name", "quotation" },
+                    { "service.instance.id", Environment.MachineName }
+                };
+            })
+            .CreateLogger();
 
         var builder = WebApplication.CreateBuilder(args);
 
@@ -58,11 +63,11 @@ public class Program
             {
                 Title = "Quotation API",
                 Version = "v1",
-                Description = "Exemplo de API usando .NET 9 com Swagger (OpenAPI)",
+                Description = "Quotation API by using .NET 9 with Swagger (OpenAPI)",
                 Contact = new OpenApiContact
                 {
-                    Name = "Seu Nome",
-                    Email = "seuemail@dominio.com"
+                    Name = "Admin",
+                    Email = "yurifullstack@gmail.com"
                 }
             });
         });
@@ -71,10 +76,10 @@ public class Program
             .WithTracing(tracerProviderBuilder =>
             {
                 tracerProviderBuilder
-                    .AddSource("Yosef")
+                    .AddSource("Quotation")
                     .AddSource(_activitySource.Name)
                     .ConfigureResource(resource => resource
-                        .AddService("Yosef", serviceInstanceId: Environment.MachineName))
+                        .AddService("Quotation", serviceInstanceId: Environment.MachineName))
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation(p =>
@@ -126,11 +131,6 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
         app.MapPost("/create", async ([FromBody] QuotationDataModel request, IQuotationRepository repository, IMapper mapper) =>
         {
