@@ -225,7 +225,7 @@ public class Program
                 .Produces<GlobalSettings>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound);
 #endif
-            organization.MapPost("/organization", async ([FromBody] OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
+            organization.MapPost("/", async ([FromBody] OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
                 {
                     using var activity = _greeterActivitySource.StartActivity("GreeterActivity");
                     logger.LogInformation("Sending greeting and creating organization");
