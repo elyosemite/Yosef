@@ -3,6 +3,8 @@ using Mediator;
 using Microsoft.Extensions.Logging;
 using ProjectManagement.Applciation.Repository;
 using ProjectManagement.Application.Repository;
+using ProjectManagement.Domain.Aggregates;
+using ProjectManagement.Domain.Events;
 
 namespace Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
 
@@ -12,17 +14,20 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
     private readonly IValidator<UpdateOrganizationNameRequest> _validator;
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IOutboxRepository _outboxRepository;
+    private readonly IDomainEventDispatcher _domainEventDispatcher;
 
     public UpdateOrganizationNameHandler(
         ILogger<UpdateOrganizationNameHandler> logger,
         IValidator<UpdateOrganizationNameRequest> validator,
         IOrganizationRepository organizationRepository,
-        IOutboxRepository outboxRepository)
+        IOutboxRepository outboxRepository,
+        IDomainEventDispatcher domainEventDispatcher)
     {
         _logger = logger;
         _validator = validator;
         _organizationRepository = organizationRepository;
         _outboxRepository = outboxRepository;
+        _domainEventDispatcher = domainEventDispatcher;
     }
 
     public async ValueTask<UpdateOrganizationNameResponse> Handle(UpdateOrganizationNameRequest request, CancellationToken cancellationToken)
@@ -56,7 +61,8 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
 
         var domainEvents = organization.DomainEvents;
         _logger.LogInformation("Publishing domain events for organization ID: {OrganizationId}", organization.Identifier);
-        await StoreDomainEventAsync(domainEvents);
+        
+        await _domainEventDispatcher.DispatchEventAsync(new List<EntityBase<Guid>>{ organization });
 
         UpdateOrganizationNameResponse org = new()
         {
@@ -67,15 +73,5 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
         _logger.LogInformation("Update successfully organization name: {Title}", org.OrganizationName);
 
         return org;
-    }
-
-    private async Task StoreDomainEventAsync(IReadOnlyCollection<Domain.Events.DomainEventBase> domainEvents)
-    {
-        foreach (var domainEvent in domainEvents)
-        {
-            _logger.LogInformation("Domain Event: {@DomainEvent}", domainEvent);
-
-            await _outboxRepository.AddAsync(domainEvent);
-        }
     }
 }
