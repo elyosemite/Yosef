@@ -1,5 +1,10 @@
 namespace Yosef.ProjectManagement.Domain.Events;
 
-public record OrganizationArchivedEvent(
-    Guid OrganizationId,
-    DateTime ArchivedAt);
+public class OrganizationArchivedEvent : DomainEventBase
+{
+    public OrganizationArchivedEvent(
+        Guid OrganizationId,
+        DateTime ArchivedAt)
+    {
+    }
+}
