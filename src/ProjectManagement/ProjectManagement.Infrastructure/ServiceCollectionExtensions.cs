@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProjectManagement.Infrastructure.Repository;
 using ProjectManagement.Applciation.Repository;
+using ProjectManagement.Domain.Events;
+using Yosef.ProjectManagement.Infrastructure.DispatcherHandler;
 
 namespace ProjectManagement.Infrastructure;
 
@@ -27,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(s => globalSettings);
         services.AddSingleton<IGlobalSettings, GlobalSettings>(s => globalSettings);
         services.AddScoped<IOutboxRepository, OutboxRepository>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return globalSettings;
     }
