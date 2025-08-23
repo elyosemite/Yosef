@@ -19,16 +19,19 @@ public class DomainEventDispatcher : IDomainEventDispatcher
 
     public async Task DispatchEventAsync(IEnumerable<IHasDomainEvent> domainEvents)
     {
+        _logger.LogInformation("Getting in DispatchEventAsync");
         foreach (IHasDomainEvent entity in domainEvents)
         {
             if (entity is HasDomainEventBase hasDomainEvent)
             {
                 DomainEventBase[] events = hasDomainEvent.DomainEvents.ToArray();
                 hasDomainEvent.ClearDomainEvents();
+                _logger.LogInformation("Get domain events: {@events}", events);
 
                 if (events.Any())
                 {
                     var dispatcherNotification = new DispatcherNotification(events);
+                    _logger.LogInformation("Get domain events: {@dispatcherNotification}", dispatcherNotification);
                     await _mediator.Publish(dispatcherNotification);
                 }
             }
