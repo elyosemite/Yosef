@@ -17,6 +17,7 @@ public class GlobalSettings : IGlobalSettings
         Sqlite = new SqlSettings();
         DataProtection = new DataProtectionSettings(this);
         EnableCloudCommunication = false;
+        RabbitMqSettings = new RabbitMqSettings();
     }
 
     public bool SelfHosted { get; set; }
@@ -35,4 +36,5 @@ public class GlobalSettings : IGlobalSettings
     public ISqlSettings PostgreSql { get; set; }
     public ISqlSettings Sqlite { get; set; }
     public IDataProtectionSettings DataProtection { get; set; }
+    public IRabbitMqSettings RabbitMqSettings { get; set; }
 }

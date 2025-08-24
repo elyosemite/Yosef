@@ -1,3 +1,4 @@
+using EventProcessor.Settings.Interfaces;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -6,71 +7,89 @@ namespace EventProcessor.RabbitMQ;
 
 public class RabbitMqPublisher : IRabbitMqPublisher, IAsyncDisposable
 {
-    private IConnection _connection;
-    private IChannel _channel;
-    private readonly string _hostname;
-    private readonly string _queueName;
+    private readonly IGlobalSettings _globalSettings;
+    private readonly IConnection _connection;
+    private readonly IChannel _channel;
+    private readonly object _channelLock = new();
 
-    public IConnection Connection { get => _connection; set => _connection = value; }
-    public IChannel Channel { get => _channel; set => _channel = value; }
-
-    public RabbitMqPublisher(string hostname = "rabbitmq", string queueName = "domain_events")
+    public RabbitMqPublisher(IGlobalSettings globalSettings, IConnection connection, IChannel channel)
     {
-        _hostname = hostname;
-        _queueName = queueName;
+        _globalSettings = globalSettings;
+        _connection = connection;
+        _channel = channel;
     }
 
-    public async Task InitializeAsync()
+    public static async Task<RabbitMqPublisher> CreateAsync(IGlobalSettings globalSettings)
     {
         var factory = new ConnectionFactory()
         {
-            HostName = _hostname,
-            Password = "guest",
-            UserName = "guest"
+            HostName = globalSettings.RabbitMqSettings.HostName,
+            Password = globalSettings.RabbitMqSettings.Password,
+            UserName = globalSettings.RabbitMqSettings.Username
         };
-        
-        Connection = await factory.CreateConnectionAsync();
-        Channel = await Connection.CreateChannelAsync();
 
-        await Channel.QueueDeclareAsync(
-            queue: _queueName,
+        var connection = await factory.CreateConnectionAsync();
+        var channel = await connection.CreateChannelAsync();
+
+        await channel.ExchangeDeclareAsync(
+            exchange: globalSettings.RabbitMqSettings.ExchangeName,
+            type: ExchangeType.Direct,
+            durable: true,
+            autoDelete: false
+        );
+
+        await channel.QueueDeclareAsync(
+            queue: globalSettings.RabbitMqSettings.QueueName,
             durable: true,
             exclusive: false,
-            autoDelete: false,
-            arguments: null
+            autoDelete: false
         );
+
+        await channel.QueueBindAsync(
+            queue: globalSettings.RabbitMqSettings.QueueName,
+            exchange: globalSettings.RabbitMqSettings.ExchangeName,
+            routingKey: globalSettings.RabbitMqSettings.QueueName
+        );
+
+        return new RabbitMqPublisher(globalSettings, connection, channel);
     }
 
-    public async ValueTask PublishAsync<T>(T message)
+    public ValueTask PublishAsync<T>(T message)
     {
-        if (Channel == null)
-            throw new InvalidOperationException("RabbitMQ channel is not initialized. Call InitializeAsync first.");
-
         var json = JsonSerializer.Serialize(message);
-        var body = Encoding.UTF8.GetBytes(json);
+        return PublishPayloadAsync(json);
+    }
 
-        await Channel.BasicPublishAsync(
-            exchange: "domain_events",
-            routingKey: _queueName,
-            mandatory: true,
-            basicProperties: new BasicProperties {},
-            body: body,
-            new CancellationToken()
-        );
+    public ValueTask PublishPayloadAsync(string payload)
+    {
+        var body = Encoding.UTF8.GetBytes(payload);
+
+        lock (_channelLock)
+        {
+            _channel.BasicPublishAsync(
+                exchange: _globalSettings.RabbitMqSettings.ExchangeName,
+                routingKey: _globalSettings.RabbitMqSettings.QueueName,
+                mandatory: true,
+                basicProperties: new BasicProperties { },
+                body: body,
+                new CancellationToken()
+            );
+        }
+        return ValueTask.CompletedTask;
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (Channel != null)
+        if (_channel.IsOpen)
         {
-            await Task.Run(async () => await Channel.CloseAsync());
-            Channel.Dispose();
+            await _channel.CloseAsync();
         }
+        _channel.Dispose();
 
-        if (Connection != null)
+        if (_connection.IsOpen)
         {
-            await Task.Run(async () => await Connection.CloseAsync());
-            Connection.Dispose();
+            await _connection.CloseAsync();
         }
+        _connection.Dispose();
     }
 }
