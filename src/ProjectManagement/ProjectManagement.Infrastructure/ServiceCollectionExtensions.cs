@@ -1,12 +1,14 @@
 using ProjectManagement.Infrastructure.Settings;
 using ProjectManagement.Infrastructure.Settings.Interfaces;
+using ProjectManagement.Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ProjectManagement.Infrastructure.Repository;
-using ProjectManagement.Applciation.Repository;
 using ProjectManagement.Domain.Events;
 using Yosef.ProjectManagement.Infrastructure.DispatcherHandler;
+using ProjectManagement.Applciation.Repository;
+using Mediator;
+using ProjectManagement.Application;
 
 namespace ProjectManagement.Infrastructure;
 
@@ -30,6 +32,16 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IGlobalSettings, GlobalSettings>(s => globalSettings);
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddMediator(
+            (MediatorOptions options) =>
+            {
+                options.Assemblies = [
+                    typeof(ServiceCollectionExtensions),
+                    typeof(AssemblyMarker),
+                ];
+                options.ServiceLifetime = ServiceLifetime.Scoped;
+            }
+        );
 
         return globalSettings;
     }
