@@ -59,9 +59,6 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
         await _organizationRepository.UpsertAsync(organization);
         _logger.LogInformation("Organization name updated to: {OrganizationName}", organization.Name);
 
-        var domainEvents = organization.DomainEvents;
-        _logger.LogInformation("Publishing domain events for organization ID: {OrganizationId}", organization.Identifier);
-        
         await _domainEventDispatcher.DispatchEventAsync(new List<EntityBase<Guid>>{ organization });
 
         UpdateOrganizationNameResponse org = new()
