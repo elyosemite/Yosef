@@ -12,11 +12,21 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         var globalSettings = new GlobalSettings();
-        ConfigurationBinder.Bind(configuration.GetSection("GlobalSettings"), globalSettings);
+        try
+        {
+            ConfigurationBinder.Bind(configuration.GetSection("GlobalSettings"), globalSettings);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Error to bind GlobalSettings", ex);
+        }
         
         services.AddSingleton(s => globalSettings);
         services.AddSingleton<IGlobalSettings, GlobalSettings>(s => globalSettings);
-        services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
+        services.AddSingleton<IRabbitMqPublisher>(rabbitmq =>
+        {
+            return RabbitMqPublisher.CreateAsync(globalSettings).GetAwaiter().GetResult();
+        });
         services.AddSingleton<IOutboxRepository, OutboxRepository>();
 
         services.AddMediator(
