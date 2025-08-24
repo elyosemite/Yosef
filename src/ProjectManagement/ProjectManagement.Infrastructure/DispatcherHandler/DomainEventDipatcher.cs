@@ -32,7 +32,15 @@ public class DomainEventDispatcher : IDomainEventDispatcher
                 {
                     var dispatcherNotification = new DispatcherNotification(events);
                     _logger.LogInformation("Get domain events: {@dispatcherNotification}", dispatcherNotification);
-                    await _mediator.Publish(dispatcherNotification);
+                    try
+                    {
+                        await _mediator.Publish(dispatcherNotification);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error publishing domain events for entity of type {EntityType}", entity.GetType().Name);
+                        throw;
+                    }
                 }
             }
             else
