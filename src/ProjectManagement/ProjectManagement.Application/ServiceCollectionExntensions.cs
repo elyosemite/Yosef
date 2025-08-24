@@ -1,5 +1,5 @@
 using FluentValidation;
-using Mediator;
+//using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ProjectManagement.Application;
@@ -10,12 +10,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddValidatorsFromAssemblyContaining(typeof(ServiceCollectionExtensions));
 
-        services.AddMediator(
-            (MediatorOptions options) =>
-            {
-                options.Assemblies = [typeof(ServiceCollectionExtensions)];
-                options.ServiceLifetime = ServiceLifetime.Scoped;
-            }
-        );
+        // services.AddMediator(
+        //     (MediatorOptions options) =>
+        //     {
+        //         options.Assemblies = [typeof(ServiceCollectionExtensions)];
+        //         options.ServiceLifetime = ServiceLifetime.Scoped;
+        //     }
+        // );
     }
 }
