@@ -25,7 +25,7 @@ public sealed class OutboxRepository : IOutboxRepository
     {
         var message = new OutboxMessage
         {
-            OccurredOn = DateTime.UtcNow,
+            OccurredOn = domainEvent.OccurredOn,
             Type = domainEvent.GetType().Name,
             Payload = JsonSerializer.Serialize(domainEvent, domainEvent.GetType())
         };
