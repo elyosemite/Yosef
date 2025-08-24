@@ -6,4 +6,5 @@ public interface IRabbitMqSettings
     string Username { get; set; }
     string Password { get; set; }
     string ExchangeName { get; set; }
+    string QueueName { get; set; }
 }
