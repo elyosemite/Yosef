@@ -15,4 +15,5 @@ public interface IGlobalSettings
     ISqlSettings PostgreSql { get; set; }
     ISqlSettings Sqlite { get; set; }
     IDataProtectionSettings DataProtection { get; set; }
+    IRabbitMqSettings RabbitMqSettings { get; set; }
 }
