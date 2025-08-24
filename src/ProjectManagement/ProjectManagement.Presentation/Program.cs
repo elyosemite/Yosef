@@ -20,6 +20,7 @@ using ProjectManagement.Application.Repository;
 using Mediator;
 using Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
 using ProjectManagement.Application;
+using ProjectManagement.Infrastructure.DispatcherHandler;
 
 namespace ProjectManagement.Presentation;
 
@@ -107,9 +108,8 @@ public class Program
                 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
                 .AddJsonFile("secrets.json", optional: true)
                 .AddEnvironmentVariables();
-            
+
             Log.Information("Arguments: {@args}", args);
-            Log.Information("Configuration loaded: {@Configuration}", builder.Configuration.AsEnumerable());
 
             var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
 
@@ -134,7 +134,7 @@ public class Program
                         options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     });
-                    //.AddConsoleExporter();
+                //.AddConsoleExporter();
             })
             .WithMetrics(meterProviderBuilder =>
             {
@@ -157,7 +157,7 @@ public class Program
                         options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     });
-                    //.AddConsoleExporter();
+                //.AddConsoleExporter();
             });
 
             builder.Services.AddEndpointsApiExplorer();
@@ -170,14 +170,14 @@ public class Program
             });
             builder.Services.AddEFRepository(globalSettings);
             builder.Services.AddApplication();
-            builder.Services.AddMediator(
-                (MediatorOptions options) =>
-                {
-                    options.Assemblies = [typeof(Program)];
-                    options.ServiceLifetime = ServiceLifetime.Scoped;
-                }
-            );
-
+            // builder.Services.AddMediator(
+            //     (MediatorOptions options) =>
+            //     {
+            //         options.Assemblies = [typeof(Program)];
+            //         options.ServiceLifetime = ServiceLifetime.Scoped;
+            //     }
+            // );
+           
             if (builder.Environment.IsDevelopment())
             {
                 Console.WriteLine("Development environment detected.");
@@ -270,7 +270,7 @@ public class Program
                 })
                 .WithName("GetOrganization")
                 .Produces(StatusCodes.Status400BadRequest);
-            
+
             organization.MapPost("/id", async ([FromBody] UpdateOrganizationNameRequest req, ILogger<GetOrganization> logger, IMediator mediator) =>
                 {
                     using var activity = _greeterActivitySource.StartActivity("UpdateOrganization");
