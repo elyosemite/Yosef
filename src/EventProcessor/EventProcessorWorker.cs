@@ -2,6 +2,8 @@ using EventProcessor.Repository;
 using Mediator;
 using System.Text.Json;
 using EventProcessor.Events;
+using System.Reflection;
+using EventProcessor.EventHandler;
 
 namespace EventProcessor.Worker;
 
@@ -41,12 +43,7 @@ public sealed class EventProcessorWorker : BackgroundService
                 {
                     try
                     {
-                        var type = Type.GetType(msg.Type);
-                        if (type == null) throw new InvalidOperationException($"Type does not set up: {msg.Type}");
-
-                        var @event = JsonSerializer.Deserialize(msg.Payload, type);
-                        if (@event == null) throw new InvalidOperationException("Error to deserialize event from Outbox to RabbitMQ");
-
+                        var @event = new GenericEvent(msg.Payload);
                         await mediator.Publish(@event, stoppingToken);
                     }
                     catch (Exception ex)
