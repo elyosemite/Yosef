@@ -1,8 +1,7 @@
 namespace Yosef.ProjectManagement.Domain.Events;
 
-public class OrgNameUpdatedEvent : DomainEventBase
+public class OrgNameUpdatedEvent(Guid OrganizationId, string OrganizationName) : DomainEventBase
 {
-    public OrgNameUpdatedEvent(Guid OrganizationId, string OrganizationName)
-    {
-    }
+    public Guid OrganizationId { get; } = OrganizationId;
+    public string OrganizationName { get; } = OrganizationName;
 }
