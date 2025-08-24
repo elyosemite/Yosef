@@ -8,6 +8,7 @@ public class RabbitMqSettings : IRabbitMqSettings
     private string _username = string.Empty;
     private string _password = string.Empty;
     private string _exchangeName = string.Empty;
+    private string _queueName = string.Empty;
 
     public string HostName
     {
@@ -28,5 +29,10 @@ public class RabbitMqSettings : IRabbitMqSettings
     {
         get => _exchangeName;
         set => _exchangeName = value.Trim('"');
+    }
+    public string QueueName
+    {
+        get => _queueName;
+        set => _queueName = value.Trim('"');
     }
 }
