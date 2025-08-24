@@ -1,10 +1,11 @@
-using EventProcessor.Events;
 using EventProcessor.RabbitMQ;
 using Mediator;
 
 namespace EventProcessor.EventHandler;
 
-public class OrgNameUpdatedEventHandler : INotificationHandler<OrgNameUpdatedEvent>
+public record GenericEvent(string Payload) : INotification;
+
+public class OrgNameUpdatedEventHandler : INotificationHandler<GenericEvent>
 {
     private readonly ILogger<OrgNameUpdatedEventHandler> _logger;
     private readonly IRabbitMqPublisher _publisher;
@@ -15,9 +16,9 @@ public class OrgNameUpdatedEventHandler : INotificationHandler<OrgNameUpdatedEve
         _publisher = publisher;
     }
 
-    public async ValueTask Handle(OrgNameUpdatedEvent notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(GenericEvent notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling OrgNameUpdatedEvent for Organization: {@notification}", notification);
-        await _publisher.PublishAsync(notification); // Publish the event to RabbitMQ queue in order to processed it later by another handler.
+        await _publisher.PublishPayloadAsync(notification.Payload);
     }
 }
