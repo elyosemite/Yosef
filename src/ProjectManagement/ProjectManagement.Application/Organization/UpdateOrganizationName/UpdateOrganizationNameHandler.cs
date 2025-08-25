@@ -13,20 +13,17 @@ public class UpdateOrganizationNameHandler : IRequestHandler<UpdateOrganizationN
     private readonly ILogger<UpdateOrganizationNameHandler> _logger;
     private readonly IValidator<UpdateOrganizationNameRequest> _validator;
     private readonly IOrganizationRepository _organizationRepository;
-    private readonly IOutboxRepository _outboxRepository;
     private readonly IDomainEventDispatcher _domainEventDispatcher;
 
     public UpdateOrganizationNameHandler(
         ILogger<UpdateOrganizationNameHandler> logger,
         IValidator<UpdateOrganizationNameRequest> validator,
         IOrganizationRepository organizationRepository,
-        IOutboxRepository outboxRepository,
         IDomainEventDispatcher domainEventDispatcher)
     {
         _logger = logger;
         _validator = validator;
         _organizationRepository = organizationRepository;
-        _outboxRepository = outboxRepository;
         _domainEventDispatcher = domainEventDispatcher;
     }
 
