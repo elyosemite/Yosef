@@ -41,7 +41,7 @@ jobs:
         run: |
           docker build \
           -f ./src/ProjectManagement/Dockerfile \
-          -t ghcr.io/${{ github.repository }}/projectmanagement:latest \
+          -t ghcr.io/yosef/projectmanagement:latest \
           ./src/ProjectManagement
 
       - name: Push Docker Image
