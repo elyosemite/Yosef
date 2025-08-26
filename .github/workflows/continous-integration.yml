@@ -31,10 +31,10 @@ jobs:
 
       # Continous Integration Steps
       - name: Restore dependencies
-        run: dotnet restore ./Yosef.sln
+        run: dotnet restore ./src/ProjectManagement/ProjectManagement.csproj
 
       - name: Build
-        run: dotnet build ./Yosef.sln --no-restore --configuration Release
+        run: dotnet build ./src/ProjectManagement/ProjectManagement.csproj --no-restore --configuration Release
 
       # Continous Delivery Steps
       - name: Build Docker Image
