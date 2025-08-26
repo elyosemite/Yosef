@@ -39,9 +39,7 @@ jobs:
       # Continous Delivery Steps
       - name: Build Docker Image
         run: |
-          docker build \
-          -f ./src/ProjectManagement/Dockerfile \
-          -t ghcr.io/yosef/projectmanagement:latest .
+          docker build -f ./src/ProjectManagement/Dockerfile -t ghcr.io/yosef/projectmanagement:latest .
 
       - name: Push Docker Image
         if: github.ref == 'refs/heads/main'
