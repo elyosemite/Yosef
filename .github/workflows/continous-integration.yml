@@ -29,15 +29,20 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      # Continous Integration Steps
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ./Yosef.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ./Yosef.sln --no-restore --configuration Release
 
+      # Continous Delivery Steps
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/projectmanagement:latest .
+          docker build \
+          -f ./src/ProjectManagement/Dockerfile \
+          -t ghcr.io/${{ github.repository }}/projectmanagement:latest \
+          ./src/ProjectManagement
 
       - name: Push Docker Image
         if: github.ref == 'refs/heads/main'
