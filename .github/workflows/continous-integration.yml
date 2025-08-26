@@ -29,14 +29,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      # Continous Integration Steps
+      # Continous Integration
       - name: Restore dependencies
         run: dotnet restore ./src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj
 
       - name: Build
         run: dotnet build ./src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj --no-restore --configuration Release
 
-      # Continous Delivery Steps
+      # Continous Delivery
       - name: Build Docker Image
         run: |
           docker build --no-cache -f ./src/ProjectManagement/Dockerfile -t ghcr.io/yosef/projectmanagement:latest .
