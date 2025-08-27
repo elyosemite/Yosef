@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY ["src/ProjectManagement/", "src/ProjectManagement/"]
 COPY ["xpto/", "xpto/"]
-COPY ["dev/", "dev/"]
+COPY ["./dev/", "./dev/"]
 
 RUN dotnet publish "src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj" -c Debug -o /app/publish
 
