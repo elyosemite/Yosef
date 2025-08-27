@@ -39,7 +39,7 @@ jobs:
       # Continous Delivery
       - name: Build Docker Image
         run: |
-          docker build --no-cache -f ./src/ProjectManagement/Dockerfile -t ghcr.io/yosef/projectmanagement:latest .
+          docker build --no-cache  --progress=plain -f ./src/ProjectManagement/Dockerfile -t ghcr.io/yosef/projectmanagement:latest .
 
       - name: Push Docker Image
         if: github.ref == 'refs/heads/main'
