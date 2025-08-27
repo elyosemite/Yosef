@@ -7,7 +7,6 @@ RUN dotnet publish "src/ProjectManagement/ProjectManagement.Presentation/Project
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/dev ./dev
 COPY --from=build /app/publish ./
 
 # RUN apt-get update \
