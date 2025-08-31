@@ -12,3 +12,8 @@ src/ProjectManagement/ProjectManagement.Presentation/secrets.json
 .env
 tasks
 .vite
+
+*.beam
+*.ez
+/build
+erl_crash.dump
