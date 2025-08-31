@@ -22,27 +22,27 @@ This project is designed to be a community-driven effort. We welcome software en
 
 Yosef is composed of several specialized microservices that work together to provide a complete insurance platform.
 
-  * **`Identity Service`**
+  * **[Identity Service](/docs/services/IdentityService.md)**
 
       * **Description:** Manages all IAM-related operations. It integrates with **KeyCloak** to handle authentication and authorization for **brokerages**, **brokers**, **customers**, and other roles within the system.
 
-  * **`ProjectManagement Service`**
+  * **[ProjectManagement Service]**
 
       * **Description:** Allows for the creation and organization of insurance projects. This enables brokerages to segment their sales efforts, for example: a project for selling Bike insurance, another for Ship insurance, or one for Aircraft insurance.
 
-  * **`Quotation Service`**
+  * **[Quotation Service](/docs/services/QuotationService.md)**
 
       * **Description:** A dedicated service for creating and managing insurance quotations. It handles the initial pricing and terms before a policy is finalized.
 
-  * **`Policy Service`**
+  * **[Policy Service](/docs/services/PolicyService.md)**
 
       * **Description:** Responsible for creating and managing insurance policies. A policy is the final contract, which is generated from an approved quotation.
 
-  * **`Notification Service`**
+  * **[Notification Service](/docs/services/NotificationService.md)**
 
       * **Description:** Handles all outbound communications. It integrates with message brokers like **RabbitMQ**, **Kafka**, or **Azure Service Bus** and can deliver messages via various channels, including **SMS** and **gRPC**.
 
-  * **`EventProcessor Service`**
+  * **[EventProcessor Service](/docs/services/EventProcessorService.md)**
 
       * **Description:** Acts as the asynchronous backbone of the platform. Any event or background job that needs to be processed asynchronously by the services above is handled here. This ensures that the system remains responsive and resilient.
 
