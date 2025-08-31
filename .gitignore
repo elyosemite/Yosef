@@ -11,3 +11,4 @@ src/ProjectManagement/ProjectManagement.Presentation/secrets.json
 
 .env
 tasks
+.vite
