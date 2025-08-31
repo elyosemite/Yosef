@@ -15,5 +15,5 @@ tasks
 
 *.beam
 *.ez
-/build
+src/Claim/build
 erl_crash.dump
