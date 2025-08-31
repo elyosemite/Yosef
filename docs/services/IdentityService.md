@@ -19,3 +19,5 @@
 
 * **Technology:** **.NET C#**
   * Rationale: Identity management benefits from strong typing, enterprise-level security libraries, and integration with tools like **IdentityServer**.
+
+Back to [README](/README.md)

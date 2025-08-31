@@ -19,3 +19,5 @@
 * **Technology:** **Python**
 
   * Rationale: Finance/billing often integrates with external APIs (banks, ERP). Python offers fast prototyping and good libraries for financial data handling.
+
+Back to [README](/README.md)

@@ -16,3 +16,5 @@
 * **Technology:** **Golang**
 
   * Rationale: Go is well-suited for high-performance event streaming and concurrency.
+
+Back to [README](/README.md)
