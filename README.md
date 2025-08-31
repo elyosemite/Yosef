@@ -4,19 +4,19 @@
 [](https://opensource.org/licenses/MIT)
 [](https://www.google.com/search?q=./CONTRIBUTING.md)
 
-Yosef is a comprehensive, open-source microservices platform built with .NET C\# for the financial insurance industry. It provides a robust, scalable, and observable foundation for building modern insurance applications.
+Yosef is a comprehensive, open-source microservices built with .NET C#, Python, Typescript and Golang for the financial insurance industry. It provides a robust, scalable and observable foundation in order to modern insurance applications studies.
 
-This project is designed to be a community-driven effort. We welcome developers to use it as a boilerplate for their own solutions, contribute to its core features, and help it grow.
+This project is designed to be a community-driven effort. We welcome software engineers to use it as a guide to studying in finance industry, contribute to its core features, and help it grow.
 
 ## Features
 
-  * **Microservices Architecture:** A decoupled architecture that ensures scalability and maintainability.
+  * **Microservices Approach:** A decoupled architecture that ensures scalability, flexibility and maintainability.
   * **Identity Management:** Centralized identity and access management for brokerages, brokers, and other entities.
   * **Project-Based Organization:** Manage insurance sales initiatives as distinct projects (e.g., Bike Insurance, Ship Insurance).
-  * **Full Insurance Lifecycle:** From quotation management to policy creation.
+  * **Full Insurance Lifecycle:** From `quotation` management to `policy` creation.
   * **Asynchronous Processing:** Dedicated services for handling asynchronously background jobs and event-driven communication.
-  * **High Observability:** Pre-configured stack for monitoring, logging, and tracing. In this case, it uses Grafana.
-  * **Enterprise-Grade Security:** Integrated with industry-standard tools for secrets and identity management.
+  * **High Observability:** Pre-configured stack for monitoring, logging, and distributed tracing. In this case, it uses ``Grafana``, ``Grafana`` ``Loki``, ``Jaeger``, ``Prometheus`` and `Open Telemetry Collector`
+  * **Enterprise-Grade Security:** Integrated with industry-standard tools for secrets and identity management. It refers to Key Vault
 
 ## Architecture & Services
 
@@ -24,7 +24,7 @@ Yosef is composed of several specialized microservices that work together to pro
 
   * **`Identity Service`**
 
-      * **Description:** Manages all identity-related operations. It integrates with **KeyCloak** to handle authentication and authorization for brokerages, brokers, clients, and other roles within the system.
+      * **Description:** Manages all IAM-related operations. It integrates with **KeyCloak** to handle authentication and authorization for **brokerages**, **brokers**, **customers**, and other roles within the system.
 
   * **`ProjectManagement Service`**
 
