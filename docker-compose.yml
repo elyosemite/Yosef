@@ -22,7 +22,7 @@ services:
       - "3100:3100" # Porta HTTP do Loki
       - "9095:9095" # Porta GRPC do Loki
     volumes:
-      - ./Observability/loki/loki-config.yml:/etc/loki/config.yml
+      - ./observability/loki/loki-config.yml:/etc/loki/config.yml
     command: -config.file=/etc/loki/config.yml
     networks:
       - monitoring-net
@@ -33,7 +33,7 @@ services:
     ports:
       - "9090:9090" # UI do Prometheus
     volumes:
-      - ./Observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Arquivo de configuração
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Arquivo de configuração
       - prometheus-data:/prometheus # Volume para persistir dados
     command: --config.file=/etc/prometheus/prometheus.yml
     networks:
@@ -45,8 +45,8 @@ services:
     ports:
       - "3000:3000" # Porta do Grafana
     volumes:
-      - ./Observability/grafana/provisioning/:/etc/grafana/provisioning/
-      - ./Observability/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./observability/grafana/provisioning/:/etc/grafana/provisioning/
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
       - grafana-storage:/var/lib/grafana
     depends_on:
       - loki
