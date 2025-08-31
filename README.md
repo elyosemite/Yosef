@@ -22,17 +22,13 @@ This project is designed to be a community-driven effort. We welcome software en
 
 Yosef is composed of several specialized microservices that work together to provide a complete insurance platform.
 
-  - **[Identity Service](/docs/services/IdentityService.md)**: Manages all IAM-related operations. It integrates with **KeyCloak** to handle authentication and authorization for **brokerages**, **brokers**, **customers**, and other roles within the system.
-
-  - **[ProjectManagement Service](/docs/services/ProjectManagementService.md)**: Allows for the creation and organization of insurance projects. This enables brokerages to segment their sales efforts, for example: a project for selling Bike insurance, another for Ship insurance, or one for Aircraft insurance.
-
-  - **[Quotation Service](/docs/services/QuotationService.md)**:A dedicated service for creating and managing insurance quotations. It handles the initial pricing and terms before a policy is finalized.
-
-  - **[Policy Service](/docs/services/PolicyService.md)**:  Responsible for creating and managing insurance policies. A policy is the final contract, which is generated from an approved quotation.
-
-  - **[Notification Service](/docs/services/NotificationService.md)**: Handles all outbound communications. It integrates with message brokers like **RabbitMQ**, **Kafka**, or **Azure Service Bus** and can deliver messages via various channels, including **SMS** and **gRPC**.
-
-  - **[EventProcessor Service](/docs/services/EventProcessorService.md)**: Acts as the asynchronous backbone of the platform. Any event or background job that needs to be processed asynchronously by the services above is handled here. This ensures that the system remains responsive and resilient.
+  - [Identity Service](/docs/services/IdentityService.md): Manages all IAM-related operations. It integrates with **KeyCloak** to handle authentication and authorization for **brokerages**, **brokers**, **customers**, and other roles within the system.
+  - [ProjectManagement Service](/docs/services/ProjectManagementService.md): Allows for the creation and organization of insurance projects. This enables brokerages to segment their sales efforts, for example: a project for selling Bike insurance, another for Ship insurance, or one for Aircraft insurance.
+  - [Quotation Service](/docs/services/QuotationService.md):A dedicated service for creating and managing insurance quotations. It handles the initial pricing and terms before a policy is finalized.
+  - [Policy Service](/docs/services/PolicyService.md):  Responsible for creating and managing insurance policies. A policy is the final contract, which is generated from an approved quotation.
+  - [Notification Service](/docs/services/NotificationService.md): Handles all outbound communications. It integrates with message brokers like **RabbitMQ**, **Kafka**, or **Azure Service Bus** and can deliver messages via various channels, including **SMS** and **gRPC**.
+  - [EventProcessor Service](/docs/services/EventProcessorService.md): Acts as the asynchronous backbone of the platform. Any event or background job that needs to be processed asynchronously by the services above is handled here. This ensures that the system remains responsive and resilient.
+  - [Analitycs Service](/docs/services/AnalyticsService.md): Aggregates domain events for reporting and dashboards. Provides insights into business metrics (quotes, policies, payments, churn, claims, policy issued, etc).
 
 ## Technology Stack
 
@@ -70,14 +66,7 @@ Security is a first-class citizen in the Yosef project.
 
 ## Database
 
-To facilitate easy setup and development, the project currently uses **SQLite3**.
-
-### Future Roadmap
-
-Our goal is to be production-ready. The following database support is planned for the near future:
-
-  * **PostgreSQL:** Will be supported as the primary relational database for robust, production-grade data persistence.
-  * **Redis:** Will be integrated for high-performance caching to reduce database load and improve response times.
+To facilitate easy setup and development, the project currently uses **PostgreSQL**.
 
 ## Getting Started
 
