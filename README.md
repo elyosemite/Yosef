@@ -29,6 +29,7 @@ Yosef is composed of several specialized microservices that work together to pro
   - [Notification Service](/docs/services/NotificationService.md): Handles all outbound communications. It integrates with message brokers like **RabbitMQ**, **Kafka**, or **Azure Service Bus** and can deliver messages via various channels, including **SMS** and **gRPC**.
   - [EventProcessor Service](/docs/services/EventProcessorService.md): Acts as the asynchronous backbone of the platform. Any event or background job that needs to be processed asynchronously by the services above is handled here. This ensures that the system remains responsive and resilient.
   - [Analitycs Service](/docs/services/AnalyticsService.md): Aggregates domain events for reporting and dashboards. Provides insights into business metrics (quotes, policies, payments, churn, claims, policy issued, etc).
+  - [Claim Service](/docs/services/ClaimService.md): manages the full lifecycle of insurance claims, from first notice of loss (FNOL) through investigation, assessment, approval/rejection, and settlement.
 
 ## Technology Stack
 
