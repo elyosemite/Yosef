@@ -1,7 +1,5 @@
-import gleam/float
 import gleam/option.{type Option, None, Some}
-import gleam/result
-import gleam/string
+import youid/uuid
 
 pub type Money {
   Money(value: Float, currency: String)
@@ -70,6 +68,30 @@ pub fn handle_command(
         Some(_) -> Error("Cannot reject: invalid status")
         None -> Error("Claim not found")
       }
+    }
+  }
+}
+
+// Apply eventsto state (rebuild state for queries)
+pub fn apply(state: Option(ClaimState), event: Event) -> ClaimState {
+  case event {
+    ClaimCreated(policy_id, amount, details) -> {
+      ClaimState(
+        id: uuid.v4_string(),
+        policy_id: policy_id,
+        amount: amount,
+        status: "pending",
+        details: details,
+        version: 1,
+      )
+    }
+    ClaimApproved -> {
+      let assert Some(s) = state
+      ClaimState(..s, status: "approved", version: s.version + 1)
+    }
+    ClaimRejected -> {
+      let assert Some(s) = state
+      ClaimState(..s, status: "rejected", version: s.version + 1)
     }
   }
 }
