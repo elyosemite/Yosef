@@ -1,8 +1,8 @@
+import gleam/list
 import gleam/option.{type Option, None, Some}
-import youid/uuid
 
 pub type Money {
-  Money(value: Float, currency: String)
+  Money(amount: Float, currency: String)
 }
 
 pub fn new_money(amount: Float, currency: String) -> Result(Money, String) {
@@ -28,70 +28,52 @@ pub type ClaimState {
   )
 }
 
-// Commands (CQRS Command side)
-pub type Command {
-  CreateClaim(policy_id: String, amount: Money, details: ClaimDetails)
-  ApproveClaim
-  RejectClaim
-}
-
 pub type Event {
   ClaimCreated(policy_id: String, amount: Money, details: ClaimDetails)
+  ClaimUpdated(details: ClaimDetails, amount: Option(Money))
   ClaimApproved
   ClaimRejected
 }
 
-pub fn handle_command(
-  state: Option(ClaimState),
-  cmd: Command,
-) -> Result(List(Event), String) {
-  case cmd {
-    CreateClaim(policy_id, amount, details) -> {
-      // Regra: Não criar se já existe
-      case state {
-        Some(_) -> Error("Claim already exists")
-        None -> Ok([ClaimCreated(policy_id, amount, details)])
-      }
-    }
-    ApproveClaim -> {
-      case state {
-        Some(s) if s.status == "pending" && s.amount.value <=. 10_000.0 -> {
-          Ok([ClaimApproved])
+pub fn apply_events(events: List(Event)) -> Result(ClaimState, String) {
+  let initial = None
+  let final_state =
+    list.fold(events, initial, fn(acc, event) {
+      case event {
+        ClaimCreated(policy_id, amount, details) -> {
+          Some(ClaimState(
+            id: "",
+            policy_id: policy_id,
+            amount: amount,
+            status: "pending",
+            details: details,
+            version: 1,
+          ))
         }
-        Some(_) -> Error("Cannot approve: invalid status or amount too high")
-        None -> Error("Claim not found")
+        ClaimUpdated(new_details, new_amount) -> {
+          let assert Some(s): Option(ClaimState) = acc
+          let updated_amount = option.unwrap(new_amount, s.amount)
+          Some(
+            ClaimState(
+              ..s,
+              details: new_details,
+              amount: updated_amount,
+              version: s.version + 1,
+            ),
+          )
+        }
+        ClaimApproved -> {
+          let assert Some(s) = acc
+          Some(ClaimState(..s, status: "approved", version: s.version + 1))
+        }
+        ClaimRejected -> {
+          let assert Some(s) = acc
+          Some(ClaimState(..s, status: "rejected", version: s.version + 1))
+        }
       }
-    }
-    RejectClaim -> {
-      case state {
-        Some(s) if s.status == "pending" -> Ok([ClaimRejected])
-        Some(_) -> Error("Cannot reject: invalid status")
-        None -> Error("Claim not found")
-      }
-    }
-  }
-}
-
-// Apply eventsto state (rebuild state for queries)
-pub fn apply(state: Option(ClaimState), event: Event) -> ClaimState {
-  case event {
-    ClaimCreated(policy_id, amount, details) -> {
-      ClaimState(
-        id: uuid.v4_string(),
-        policy_id: policy_id,
-        amount: amount,
-        status: "pending",
-        details: details,
-        version: 1,
-      )
-    }
-    ClaimApproved -> {
-      let assert Some(s) = state
-      ClaimState(..s, status: "approved", version: s.version + 1)
-    }
-    ClaimRejected -> {
-      let assert Some(s) = state
-      ClaimState(..s, status: "rejected", version: s.version + 1)
-    }
+    })
+  case final_state {
+    Some(state) -> Ok(state)
+    None -> Error("No events to build state")
   }
 }
