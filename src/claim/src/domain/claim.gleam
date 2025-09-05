@@ -1,26 +1,11 @@
+import domain/domain_events.{
+  type Event, ClaimApproved, ClaimCreated, ClaimRejected, ClaimUpdated,
+}
+import domain/value_object.{
+  type ClaimDetails, type ClaimStatus, type Money, Approved, Pending, Rejected,
+}
 import gleam/list
 import gleam/option.{type Option, None, Some}
-
-pub type Money {
-  Money(amount: Float, currency: String)
-}
-
-pub fn new_money(amount: Float, currency: String) -> Result(Money, String) {
-  case amount >. 0.0 {
-    True -> Ok(Money(amount, currency))
-    False -> Error("Amount must be positive")
-  }
-}
-
-pub type ClaimDetails {
-  ClaimDetails(description: String, date: String)
-}
-
-pub type ClaimStatus {
-  Pending
-  Approved
-  Rejected
-}
 
 pub type ClaimState {
   ClaimState(
@@ -31,13 +16,6 @@ pub type ClaimState {
     details: ClaimDetails,
     version: Int,
   )
-}
-
-pub type Event {
-  ClaimCreated(policy_id: String, amount: Money, details: ClaimDetails)
-  ClaimUpdated(details: ClaimDetails, amount: Option(Money))
-  ClaimApproved(policy_id: String)
-  ClaimRejected(policy_id: String)
 }
 
 pub fn apply_events(events: List(Event)) -> Result(ClaimState, String) {
