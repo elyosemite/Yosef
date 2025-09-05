@@ -1,6 +1,5 @@
-import domain/claim.{
-  type ClaimDetails, type ClaimStatus, type Money, Approved, ClaimApproved,
-  ClaimCreated, ClaimDetails, ClaimRejected, ClaimState, ClaimUpdated, Money,
+import domain/value_object.{
+  type ClaimDetails, type ClaimStatus, type Money, Approved, ClaimDetails, Money,
   Pending, Rejected,
 }
 import gleam/dynamic/decode
