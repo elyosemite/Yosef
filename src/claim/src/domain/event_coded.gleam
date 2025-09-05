@@ -3,7 +3,6 @@ import domain/claim.{
   ClaimCreated, ClaimDetails, ClaimRejected, ClaimState, ClaimUpdated, Money,
   Pending, Rejected,
 }
-import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/json
 
@@ -46,20 +45,24 @@ pub fn claim_details_from_json(
 }
 
 // Coded for ClaimStatus
+/// Format in JSON
+/// {
+///   "claim_status": "Approved"
+/// }
 pub fn claim_status_to_json(status: ClaimStatus) -> String {
   let status_str = case status {
     Pending -> "Pending"
     Approved -> "Approved"
     Rejected -> "Rejected"
   }
-  json.object([#("status", json.string(status_str))])
+  json.object([#("claim_status", json.string(status_str))])
   |> json.to_string
 }
 
 pub fn claim_status_from_json(
   json_string: String,
 ) -> Result(ClaimStatus, String) {
-  case json.parse(json_string, dynamic.string) {
+  case json.parse(json_string, decode.string) {
     Ok("Pending") -> Ok(Pending)
     Ok("Approved") -> Ok(Approved)
     Ok("Rejected") -> Ok(Rejected)
