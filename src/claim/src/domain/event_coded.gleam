@@ -1,6 +1,7 @@
 import domain/claim.{
-  type ClaimDetails, type Money, ClaimApproved, ClaimCreated, ClaimDetails,
-  ClaimRejected, ClaimUpdated, Money,
+  type ClaimDetails, type ClaimStatus, type Money, Approved, ClaimApproved,
+  ClaimCreated, ClaimDetails, ClaimRejected, ClaimUpdated, Money, Pending,
+  Rejected,
 }
 import gleam/dynamic/decode
 import gleam/json
@@ -41,4 +42,15 @@ pub fn claim_details_from_json(
     decode.success(ClaimDetails(description, date))
   }
   json.parse(json_string, money_decoder)
+}
+
+// Coded for ClaimStatus
+pub fn claim_status_to_json(status: ClaimStatus) -> String {
+  let status_str = case status {
+    Pending -> "Pending"
+    Approved -> "Approved"
+    Rejected -> "Rejected"
+  }
+  json.object([#("status", json.string(status_str))])
+  |> json.to_string
 }
