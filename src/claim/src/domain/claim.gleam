@@ -36,8 +36,8 @@ pub type ClaimState {
 pub type Event {
   ClaimCreated(policy_id: String, amount: Money, details: ClaimDetails)
   ClaimUpdated(details: ClaimDetails, amount: Option(Money))
-  ClaimApproved
-  ClaimRejected
+  ClaimApproved(policy_id: String)
+  ClaimRejected(policy_id: String)
 }
 
 pub fn apply_events(events: List(Event)) -> Result(ClaimState, String) {
@@ -67,13 +67,27 @@ pub fn apply_events(events: List(Event)) -> Result(ClaimState, String) {
             ),
           )
         }
-        ClaimApproved -> {
+        ClaimApproved(policy_id) -> {
           let assert Some(s) = acc
-          Some(ClaimState(..s, status: Approved, version: s.version + 1))
+          Some(
+            ClaimState(
+              ..s,
+              policy_id: policy_id,
+              status: Approved,
+              version: s.version + 1,
+            ),
+          )
         }
-        ClaimRejected -> {
+        ClaimRejected(policy_id) -> {
           let assert Some(s) = acc
-          Some(ClaimState(..s, status: Rejected, version: s.version + 1))
+          Some(
+            ClaimState(
+              ..s,
+              policy_id: policy_id,
+              status: Rejected,
+              version: s.version + 1,
+            ),
+          )
         }
       }
     })
