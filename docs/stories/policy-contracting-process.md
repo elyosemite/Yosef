@@ -5,58 +5,44 @@ sequenceDiagram
     autonumber
 
     %% Actors
-    actor Admin as Admin User
     actor Broker as Broker
-    actor Customer as Customer
-    participant Identity as Identity Service
-    participant Quotation as Quotation Service
-    participant Policy as Policy Service
-    participant Payment as Payment Service
-    participant Notification as Notification Service
+    participant Identity as Identity
+    participant Quotation as Quotation
+    participant Policy as Policy
+    participant Payment as Payment
+    participant Notification as Notification
     participant BrokerSystem as Message Broker
 
-    %% 1. Register Brokerage
-    Admin ->> Identity: Command: RegisterBrokerage
-    Identity -->> BrokerSystem: Event: BrokerageRegistered
+    Broker ->> Identity: Command: Login
+    Identity -->> BrokerSystem: Event: LoggedBrokerEvent
+    Identity ->> Identity: Validate informations
+    Identity ->> Identity: Generate Token with Rules
+    Identity ->> Broker: Return Token with Rules
 
-    %% 2. Register Broker
-    Admin ->> Identity: Command: RegisterBroker
-    Identity -->> BrokerSystem: Event: BrokerRegistered
+    Broker ->> Quotation: Command: RequestQuote
+    Quotation ->> Quotation: Validate Token with Rules
+    Quotation ->> Quotation: Generate Quotation
+    Quotation -->> BrokerSystem: Event: QuoteGeneratedEvent
 
-    %% 3. Register Customer
-    Broker ->> Identity: Command: RegisterCustomer
-    Identity -->> BrokerSystem: Event: CustomerRegistered
-
-    %% 4. Quotation Request
-    Customer ->> Quotation: Command: RequestQuote
-    Quotation -->> BrokerSystem: Event: QuoteGenerated
-
-    %% 5. Proposal Creation
     Quotation ->> Quotation: Command: CreateProposal
-    Quotation -->> BrokerSystem: Event: ProposalCreated
+    Quotation -->> BrokerSystem: Event: ProposalCreatedEvent
 
-    %% 6. Send Proposal by Email
-    BrokerSystem -->> Notification: Event: ProposalCreated
+    BrokerSystem -->> Notification: Event: ProposalCreatedEvent
     Notification ->> Notification: Command: SendProposalEmail
-    Notification -->> BrokerSystem: Event: ProposalEmailSent
+    Notification -->> BrokerSystem: Event: ProposalEmailSentEvent
 
-    %% 7. Customer Accepts Proposal
-    Customer ->> Quotation: Command: AcceptProposal
-    Quotation -->> BrokerSystem: Event: ProposalAccepted
+    Broker ->> Quotation: Command: AcceptProposal
+    Quotation -->> BrokerSystem: Event: ProposalAcceptedEvent
 
-    %% 8. Payment Execution
-    Customer ->> Payment: Command: MakePayment
-    Payment -->> BrokerSystem: Event: PaymentConfirmed
-    Payment -->> BrokerSystem: Event: PaymentFailed
+    Broker ->> Payment: Command: MakePayment
+    Payment -->> BrokerSystem: Event: PaymentConfirmedEvent
+    Payment -->> BrokerSystem: Event: PaymentFailedEvent
 
-    %% 9. Policy Issuance
-    BrokerSystem -->> Policy: Event: PaymentConfirmed
+    BrokerSystem -->> Policy: Event: PaymentConfirmedEvent
     Policy ->> Policy: Command: IssuePolicy
-    Policy -->> BrokerSystem: Event: PolicyIssued
+    Policy -->> BrokerSystem: Event: PolicyIssuedEvent
 
-    %% 10. Send Policy Confirmation Email
-    BrokerSystem -->> Notification: Event: PolicyIssued
+    BrokerSystem -->> Notification: Event: PolicyIssuedEvent
     Notification ->> Notification: Command: SendPolicyIssuedEmail
-    Notification -->> BrokerSystem: Event: PolicyIssuedEmailSent
-
+    Notification -->> BrokerSystem: Event: PolicyIssuedEmailSentEvent
 ```
