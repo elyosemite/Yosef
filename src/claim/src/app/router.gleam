@@ -1,6 +1,6 @@
 import app/web.{type Context}
 import gleam/dynamic/decode
-import gleam/http.{Post}
+import gleam/http.{Get, Post}
 import gleam/json
 import gleam/result
 import gleam/string_tree.{from_string}
@@ -39,7 +39,7 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
     }
     ["claim"] -> {
       case result {
-        Ok(json) -> wisp.json_response(from_string(json), 201)
+        Ok(_json) -> claim(req)
         Error(_) -> wisp.unprocessable_entity()
       }
     }
@@ -51,4 +51,32 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
     _ -> wisp.not_found()
   }
   // wisp.html_response(string_tree.from_string("Hello, World!"), 200)
+}
+
+fn claim(req: Request) -> Response {
+  case req.method {
+    Post -> create_claim(req)
+    _ -> wisp.method_not_allowed([Get, Post])
+  }
+}
+
+fn create_claim(req: Request) -> Response {
+  use json <- wisp.require_json(req)
+
+  let result = {
+    use claim <- result.try(decode.run(json, claim_decoder()))
+
+    let object =
+      json.object([
+        #("policy_id", json.string(claim.policy_id)),
+        #("claim_cause", json.string(claim.claim_cause)),
+      ])
+    Ok(json.to_string(object))
+  }
+  case result {
+    Ok(json) -> wisp.json_response(from_string(json), 201)
+    Error(_) -> wisp.unprocessable_entity()
+  }
+  // let body = string_tree.from_string(json)
+  // wisp.json_response(json, 201)
 }
