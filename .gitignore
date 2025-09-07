@@ -17,3 +17,6 @@ tasks
 *.ez
 src/Claim/build
 erl_crash.dump
+
+# Identity
+/src/**/__pycache__
