@@ -1,0 +1,35 @@
+name: ProjectManagement CI Pipeline
+
+on:
+  workflow_call:
+
+jobs:
+  build-dotnet:
+    name: Build & Test .NET Service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+      
+      # - name: Release Please
+      #   id: release
+      #   uses: google-github-actions/release-please-action@v4
+      #   with:
+      #     release-type: simple
+      #     package-name: projectmanagement
+
+      # Continous Integration
+      - name: Restore dependencies
+        run: dotnet restore ./src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj
+
+      - name: Build
+        run: dotnet build ./src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj --no-restore --configuration Release
