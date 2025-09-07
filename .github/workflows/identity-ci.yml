@@ -31,4 +31,4 @@ jobs:
       #     cd src/Identity
       #     poetry run pytest tests/ --maxfail=1 --disable-warnings -q
       - name: Lint
-        run: flake8 src/
+        run: poetry run ruff src/identity --exit-zero
