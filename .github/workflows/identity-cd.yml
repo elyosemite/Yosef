@@ -20,6 +20,14 @@ jobs:
           release-type: simple
           package-name: identity
 
+      - name: Set VERSION
+        run: |
+          if [ -n "${{ steps.release.outputs.tag_name }}" ]; then
+            echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build Docker Image
         run: |
           VERSION=${{ steps.release.outputs.tag_name }}
