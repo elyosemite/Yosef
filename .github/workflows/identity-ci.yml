@@ -22,13 +22,18 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Install dependencies
         run: |
           cd src/Identity
           poetry install --no-interaction --no-ansi
+
       # - name: Run Tests
       #   run: |
       #     cd src/Identity
       #     poetry run pytest tests/ --maxfail=1 --disable-warnings -q
+
       - name: Lint
-        run: poetry run ruff src/Identity --exit-zero
+        run: |
+          cd src/Identity
+          poetry run ruff --exit-zero
