@@ -1,47 +1,25 @@
-name: CI/CD Pipeline
+name: ProjectManagement CD Pipeline
 
 on:
-  # push:
-  #   branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-  packages: write
-  # se futuramente for usar ambientes/deploy:
-  # deployments: write
-
 jobs:
-  build-dotnet:
-    name: Build & Test .NET Service
+  call-ci:
+    uses: ./github/workflows/projectmanagement-ci.yml
+
+  docker-release:
+    needs: call-ci
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '9.0.x'
-      
       - name: Release Please
         id: release
         uses: google-github-actions/release-please-action@v4
         with:
           release-type: simple
           package-name: projectmanagement
-
-      # Continous Integration
-      - name: Restore dependencies
-        run: dotnet restore ./src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj
-
-      - name: Build
-        run: dotnet build ./src/ProjectManagement/ProjectManagement.Presentation/ProjectManagement.Presentation.csproj --no-restore --configuration Release
 
       # Continous Delivery
       - name: Build Docker Image

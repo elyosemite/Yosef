@@ -1,0 +1,44 @@
+name: Identity CD
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  call-ci:
+    uses: ./.github/workflows/identity-ci.yml
+
+  docker-release:
+    needs: call-ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+          release-type: simple
+          package-name: identity
+
+      - name: Set VERSION
+        run: |
+          if [ -n "${{ steps.release.outputs.tag_name }}" ]; then
+            echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
+
+      - name: Build Docker Image
+        run: |
+          VERSION=${{ steps.release.outputs.tag_name }}
+          docker build \
+            -f ./Dockerfile \
+            -t ghcr.io/elyosemite/identity:latest \
+            -t ghcr.io/elyosemite/identity:$VERSION .
+
+      - name: Push Docker Image
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/elyosemite/identity:latest
+          docker push ghcr.io/elyosemite/identity:${{ steps.release.outputs.tag_name }}
