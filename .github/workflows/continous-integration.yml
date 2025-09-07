@@ -28,6 +28,13 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '9.0.x'
+      
+      - name: Release Please
+        id: release
+        uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: simple
+          package-name: projectmanagement
 
       # Continous Integration
       - name: Restore dependencies
@@ -38,11 +45,15 @@ jobs:
 
       # Continous Delivery
       - name: Build Docker Image
+        if: steps.release.outputs.release_created == 'true'
         run: |
-          docker build --no-cache  --progress=plain -f ./src/ProjectManagement/Dockerfile -t ghcr.io/elyosemite/projectmanagement:latest .
+          VERSION=${{ steps.release.outputs.tag_name }}
+          echo "Building version: $VERSION"
+          docker build --no-cache  --progress=plain -f ./src/ProjectManagement/Dockerfile -t ghcr.io/elyosemite/projectmanagement:latest -t ghcr.io/elyosemite/projectmanagement:$VERSION .
 
       - name: Push Docker Image
-        if: github.ref == 'refs/heads/main'
+        if: steps.release.outputs.release_created == 'true'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push ghcr.io/elyosemite/projectmanagement:latest
+          docker push ghcr.io/elyosemite/projectmanagement:${{ steps.release.outputs.tag_name }}
