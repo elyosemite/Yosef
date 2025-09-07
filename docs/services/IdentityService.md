@@ -16,8 +16,8 @@
   * `AgentCreated`, `AgentUpdated`
   * `ClientRegistered`, `ClientUpdated`
   * `UserRoleAssigned`, `UserRoleRevoked`
-
+  
 * **Technology:** **Python**
-  * Rationale: Identity management benefits from strong typing, enterprise-level security libraries, and integration with tools like **IdentityServer**.
+  * Rationale: Identity management benefits from strong typing, enterprise-level security libraries and integration with [KeyCloak](/docs/services/Identity/keycloak_configuration.md).
 
 Back to [README](/README.md)
