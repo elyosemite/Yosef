@@ -1,25 +1,34 @@
 name: Identity CI Pipeline
+
 on:
   workflow_call:
 
 jobs:
   build-python:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
+          
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install dependencies
         run: |
+          cd src/Identity
           poetry install --no-interaction --no-ansi
       - name: Run Tests
         run: |
+          cd src/Identity
           poetry run pytest tests/ --maxfail=1 --disable-warnings -q
       - name: Lint
         run: flake8 src/
