@@ -31,4 +31,4 @@ jobs:
       #     cd src/Identity
       #     poetry run pytest tests/ --maxfail=1 --disable-warnings -q
       - name: Lint
-        run: poetry run ruff src/identity --exit-zero
+        run: poetry run ruff src/Identity --exit-zero
