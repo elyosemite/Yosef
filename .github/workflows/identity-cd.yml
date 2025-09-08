@@ -6,6 +6,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  packages: write
 
 jobs:
   call-ci:
@@ -27,7 +28,7 @@ jobs:
 
       - name: Set VERSION
         run: |
-          if [ -n "${{ steps.release.outputs.release_created }}" == "true" ]; then
+          if [ "${{ steps.release.outputs.release_created }}" == "true" ]; then
             echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=latest" >> $GITHUB_ENV
@@ -43,6 +44,6 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u elyosemite --password-stdin
           docker push ghcr.io/elyosemite/identity:latest
           docker push ghcr.io/elyosemite/identity:$VERSION
