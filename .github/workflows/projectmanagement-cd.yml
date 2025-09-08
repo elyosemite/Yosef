@@ -1,7 +1,7 @@
 name: ProjectManagement CD Pipeline
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
 
 jobs:

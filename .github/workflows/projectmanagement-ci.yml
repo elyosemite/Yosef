@@ -1,6 +1,9 @@
 name: ProjectManagement CI Pipeline
 
 on:
+  paths:
+      - 'src/Identity/**'
+      - '.github/workflows/projectmanagement-*.yml'
   workflow_call:
 
 jobs:
