@@ -27,7 +27,7 @@ jobs:
 
       - name: Set VERSION
         run: |
-          if [ -n "${{ steps.release.outputs.tag_name }}" ]; then
+          if [ -n "${{ steps.release.outputs.release_created }}" == "true" ]; then
             echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=latest" >> $GITHUB_ENV
@@ -35,7 +35,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          VERSION=${{ steps.release.outputs.tag_name }}
+          echo "Building with version: $VERSION"
           docker build \
             -f ./Dockerfile \
             -t ghcr.io/elyosemite/identity:latest \
