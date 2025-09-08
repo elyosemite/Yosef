@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "Building with version: $VERSION"
           docker build \
-            -f ./Dockerfile \
+            -f ./src/Identity/Dockerfile \
             -t ghcr.io/elyosemite/identity:latest \
             -t ghcr.io/elyosemite/identity:$VERSION .
 
@@ -45,4 +45,4 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push ghcr.io/elyosemite/identity:latest
-          docker push ghcr.io/elyosemite/identity:${{ steps.release.outputs.tag_name }}
+          docker push ghcr.io/elyosemite/identity:$VERSION
