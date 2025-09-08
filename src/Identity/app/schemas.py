@@ -18,3 +18,4 @@ class TokenResponse(BaseModel):
 
 class MyCustomModel(BaseModel):
     test: str
+    test2: str
