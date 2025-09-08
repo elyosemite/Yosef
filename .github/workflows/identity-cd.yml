@@ -39,7 +39,7 @@ jobs:
           docker build \
             -f ./src/Identity/Dockerfile \
             -t ghcr.io/elyosemite/identity:latest \
-            -t ghcr.io/elyosemite/identity:$VERSION .
+            -t ghcr.io/elyosemite/identity:$VERSION ./src/Identity
 
       - name: Push Docker Image
         run: |
