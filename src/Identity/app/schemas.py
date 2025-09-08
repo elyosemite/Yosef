@@ -15,6 +15,3 @@ class TokenResponse(BaseModel):
     refresh_token: str | None = None
     token_type: str | None = None
     scope: str | None = None
-
-class MyCustomModel(BaseModel):
-    test: str
