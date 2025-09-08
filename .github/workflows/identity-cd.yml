@@ -28,7 +28,7 @@ jobs:
 
       - name: Set VERSION
         run: |
-          if [ -n "${{ steps.release.outputs.release_created }}" == "true" ]; then
+          if [ "${{ steps.release.outputs.release_created }}" == "true" ]; then
             echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=latest" >> $GITHUB_ENV
