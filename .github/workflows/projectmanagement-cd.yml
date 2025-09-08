@@ -6,7 +6,7 @@ on:
 
 jobs:
   call-ci:
-    uses: ./github/workflows/projectmanagement-ci.yml
+    uses: ./.github/workflows/projectmanagement-ci.yml
 
   docker-release:
     needs: call-ci
