@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/elyosemite/Yosef/compare/v1.0.0...v1.1.0) (2025-09-09)
+
+
+### Features
+
+* add support to admin operations in order to manage users and realms ([70ddc28](https://github.com/elyosemite/Yosef/commit/70ddc289c5919a3307a12573ff52fb9cafc54bf2))
+* add to route ([2285c40](https://github.com/elyosemite/Yosef/commit/2285c4022d305d990df493b6329afd5585061dec))
+* configure in main ([41260f2](https://github.com/elyosemite/Yosef/commit/41260f2e6b36ae545869875ca5295e0930c90da3))
+
+
+### Bug Fixes
+
+* update on keycloak admin client ([97fb121](https://github.com/elyosemite/Yosef/commit/97fb1213c2f23b3795afd3342b2b2657787a4db5))
+
 ## 1.0.0 (2025-09-08)
 
 
