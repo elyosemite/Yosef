@@ -193,6 +193,17 @@ services:
       - rabbitmq
       - migrator
       - projectmanagement
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - monitoring-net
+    ports:
+      - "8060:8080"
 
 networks:
   monitoring-net:
