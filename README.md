@@ -4,7 +4,7 @@
 [](https://opensource.org/licenses/MIT)
 [](https://www.google.com/search?q=./CONTRIBUTING.md)
 
-Yosef is a comprehensive, open-source microservices built with .NET C#, Python, Typescript and Golang for the financial insurance industry. It provides a robust, scalable and observable foundation in order to modern insurance applications studies.
+Yosef is a comprehensive, open-source microservices built with .NET C#, Python, Gleam, Typescript and Golang for the financial insurance industry. It provides a robust, scalable and observable foundation in order to modern insurance applications studies.
 
 This project is designed to be a community-driven effort. We welcome software engineers to use it as a guide to studying in finance industry, contribute to its core features, and help it grow.
 
