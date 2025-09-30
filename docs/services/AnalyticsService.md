@@ -5,7 +5,7 @@
 * **Actors:** Executives, Brokers, Analysts.
 * **Features:**
 
-  * Event aggregation & storage (data warehouse)
+  * Event aggregations & storage (data warehouse)
   * Dashboard APIs (KPIs, conversion rates, loss ratios)
   * Predictive analytics integration (ML pipelines)
   * Broker-level analytics for performance monitoring
