@@ -1,0 +1,9 @@
+# Force LF for files that must run on Linux
+*.sh        text eol=lf
+Dockerfile* text eol=lf
+
+# Windows scripts keep CRLF
+*.ps1       text eol=crlf
+
+# Default: let git decide based on platform
+*           text=auto
