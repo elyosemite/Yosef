@@ -160,14 +160,16 @@ services:
       retries: 10
   
   migrator:
-    build: 
+    build:
       context: .
       dockerfile: ./dev/Dockerfile.migrator
     container_name: ef_migrator
     networks:
       - monitoring-net
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: on-failure
   
   rabbitmq:
     image: rabbitmq:3-management
