@@ -38,6 +38,17 @@ export default {
           },
         ],
       },
+      {
+        label: 'Identity & Auth',
+        badge: { text: 'KeyCloak', color: 'green' },
+        collapsed: false,
+        items: [
+          {
+            label: 'KeyCloak Configuration',
+            link: '/docs/identity/keycloak-configuration',
+          },
+        ],
+      },
     ],
   },
   // Customize the logo, add your logo to public/ folder

@@ -1,0 +1,87 @@
+---
+title: KeyCloak Configuration
+description: Step-by-step setup for the KeyCloak realm, confidential client, and admin token used by the Identity Service.
+---
+
+## Overview
+
+The Identity Service uses KeyCloak as its OAuth2/OIDC provider. The steps below configure the realm and client required to issue JWTs for all Yosef services.
+
+> **Default environment:** `http://localhost:8080` — adjust for staging/production.
+
+---
+
+## 1. Obtain Admin Token (master realm)
+
+```bash
+ADMIN_TOKEN=$(curl -s -X POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin" \
+  -d "password=admin" \
+  -d "grant_type=password" \
+  -d "client_id=admin-cli" | jq -r .access_token)
+```
+
+---
+
+## 2. Create Realm
+
+```bash
+curl -X POST "http://localhost:8080/admin/realms" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"id":"myrealm","realm":"myrealm","enabled":true}'
+```
+
+---
+
+## 3. Create Confidential Client (`identity-client`)
+
+```bash
+curl -X POST "http://localhost:8080/admin/realms/myrealm/clients" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clientId": "identity-client",
+    "enabled": true,
+    "publicClient": false,
+    "protocol": "openid-connect",
+    "directAccessGrantsEnabled": true,
+    "serviceAccountsEnabled": true,
+    "redirectUris": ["*"]
+  }'
+```
+
+After creating the client, retrieve the generated **client secret**:
+
+```bash
+# 1. Get the internal client UUID
+CLIENT_UUID=$(curl -s \
+  "http://localhost:8080/admin/realms/myrealm/clients?clientId=identity-client" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" | jq -r '.[0].id')
+
+# 2. Fetch the secret
+curl -s \
+  "http://localhost:8080/admin/realms/myrealm/clients/$CLIENT_UUID/client-secret" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" | jq -r .value
+```
+
+---
+
+## Environment Variables
+
+| Variable | Example | Description |
+|---|---|---|
+| `KEYCLOAK_URL` | `http://localhost:8080` | Base URL of the KeyCloak server |
+| `KEYCLOAK_REALM` | `myrealm` | Realm name |
+| `KEYCLOAK_CLIENT_ID` | `identity-client` | Client ID |
+| `KEYCLOAK_CLIENT_SECRET` | `<generated>` | Client secret from step 3 |
+| `KEYCLOAK_ADMIN_USER` | `admin` | Admin username (master realm) |
+| `KEYCLOAK_ADMIN_PASSWORD` | `admin` | Admin password (master realm) |
+
+---
+
+## Related
+
+- [Identity Service](/services/IdentityService)
+- [ADR-001 — REST API Versioning](/docs/architecture-decision-records/01-rest-api-versioning)
