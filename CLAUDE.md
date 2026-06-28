@@ -159,7 +159,7 @@ Legend: `done` · `in progress` · `pending`
 | Step | Description | Status |
 |---|---|---|
 | 0.1 | Rename `Organization` → `Brokerage` across Domain, Application, Infrastructure (85 files). Keep DB column names via `HasColumnName`. | done |
-| 0.2 | Rename Presentation layer (`CreateOrganization` → `CreateBrokerage`, `GetOrganization` → `GetBrokerage`). Update `Program.cs`. Fix routes to `/api/v1/`. Add ProblemDetails middleware. | pending |
+| 0.2 | Rename Presentation layer (`CreateOrganization` → `CreateBrokerage`, `GetOrganization` → `GetBrokerage`). Update `Program.cs`. Fix routes to `/api/v1/`. Add ProblemDetails middleware. | done |
 
 ### Phase 1 — Brokerage CRUD
 
