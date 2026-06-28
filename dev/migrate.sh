@@ -29,7 +29,7 @@ dotnet-ef database update \
     --project ./ProjectManagement.Infrastructure/ProjectManagement.Infrastructure.csproj \
     --startup-project ./ProjectManagement.Presentation/ProjectManagement.Presentation.csproj \
     --context BrokerageContext \
-    -- "GlobalSettings:PostgreSql:ConnectionString=\"Host=postgres;Username=postgres;Password=example123;Database=banco_docker\""
+    --connection "Host=postgres;Port=5432;Username=postgres;Password=example123;Database=banco_docker;Include Error Detail=true"
 
 echo "Running the migration for the Quotation..."
 dotnet-ef database update \
