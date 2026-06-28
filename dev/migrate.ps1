@@ -47,7 +47,7 @@ function Get-UserSecrets {
 function Get-ConnectionString([string]$provider) {
     switch ($provider.ToLower()) {
         "postgresql" {
-            return "Host=localhost:5432;Username=postgres;Password=example123;Include Error Detail=true;Database=banco_docker"
+            return "Host=localhost;Port=5432;Username=postgres;Password=example123;Database=banco_docker;Include Error Detail=true"
         }
         "sqlite" {
             return "Data Source=project.db"
@@ -70,8 +70,8 @@ function Run-Migration([string]$provider, [string]$dbName) {
         --project "$infraDir/ProjectManagement.Infrastructure.csproj" `
         --startup-project "$presentationDir/ProjectManagement.Presentation.csproj" `
         --context "BrokerageContext" `
-        --no-build `
-        "$connectionString"
+        --connection "$connectionString" `
+        --no-build
 
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Migration for $dbName succeeded"
