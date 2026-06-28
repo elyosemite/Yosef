@@ -1,0 +1,40 @@
+---
+id: DocumentService
+version: 0.1.0
+name: Document Service
+summary: |
+  Generates and stores official insurance documents (policies, endorsements, cancellation letters). Provides secure document retrieval.
+owners:
+  - yosef-team
+sends:
+  - id: DocumentGenerated
+  - id: DocumentUpdated
+  - id: DocumentArchived
+receives:
+  - id: PolicyIssued
+  - id: PolicyEndorsed
+  - id: PolicyCanceled
+repository:
+  language: Python
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Document'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Document Service** handles generation and storage of official insurance documents in PDF format. It provides secure storage with access control and digital signature support.
+
+**Actors:** Clients, Agents, Brokers, Back-office staff.
+
+**Key features:**
+- PDF generation (policy contracts, endorsements, cancellation letters)
+- Secure storage with access control
+- Digital signatures and timestamping
+- Retrieval API for clients and brokers
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

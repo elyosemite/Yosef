@@ -1,0 +1,37 @@
+---
+id: ProjectCreatedEvent
+name: Project Created
+version: 0.1.0
+summary: |
+  Published when a new insurance product line (Project) is created under a Brokerage.
+owners:
+  - yosef-team
+badges:
+  - content: New — not yet in code
+    backgroundColor: yellow
+    textColor: yellow
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Emitted when a Project (insurance product line) is created inside a Brokerage. Projects scope Quotations and Policies — a Quotation must reference a Project.
+
+Examples of Projects: "Bike Insurance", "Ship Insurance", "Aircraft Insurance".
+
+## Payload
+
+```json title="Example payload"
+{
+  "projectId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "brokerageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "Bike Insurance",
+  "description": "Coverage for bicycles and e-bikes",
+  "createdAt": "2025-01-20T11:00:00Z"
+}
+```
+
+<NodeGraph />
+
+<Footer />

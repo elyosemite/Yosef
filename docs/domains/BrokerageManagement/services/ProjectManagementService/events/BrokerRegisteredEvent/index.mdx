@@ -1,0 +1,36 @@
+---
+id: BrokerRegisteredEvent
+name: Broker Registered
+version: 0.1.0
+summary: |
+  Published when a new Broker (sub-organization) is registered under a Brokerage.
+owners:
+  - yosef-team
+badges:
+  - content: New — not yet in code
+    backgroundColor: yellow
+    textColor: yellow
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Emitted when a Broker is registered under an existing Brokerage. A Broker is a sub-company that operates under the parent Brokerage and is granted the ability to onboard Insureds and request Quotations via the Yosef platform.
+
+**Business rule:** A Broker must belong to exactly one Brokerage. A Broker cannot have sub-Brokers (fixed two-level hierarchy).
+
+## Payload
+
+```json title="Example payload"
+{
+  "brokerId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "brokerageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "Bay Area Insurance Partners",
+  "registeredAt": "2025-02-10T09:15:00Z"
+}
+```
+
+<NodeGraph />
+
+<Footer />

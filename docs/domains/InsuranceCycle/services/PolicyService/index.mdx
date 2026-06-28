@@ -1,0 +1,48 @@
+---
+id: PolicyService
+version: 0.1.0
+name: Policy Service
+summary: |
+  Manages the full lifecycle of insurance policies: creation, issuance, suspension, cancellation, endorsement, and renewal.
+owners:
+  - yosef-team
+sends:
+  - id: PolicyCreated
+  - id: PolicyIssued
+  - id: PolicySuspended
+  - id: PolicyCanceled
+  - id: PolicyRenewed
+  - id: PolicyEndorsed
+receives:
+  - id: QuoteAccepted
+repository:
+  language: C#
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Policy'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Policy Service** is the source of truth for all insurance contracts. A Policy is created from an approved Quotation and progresses through a defined state machine.
+
+**Actors:** Clients, Agents, Brokers, Back-office staff.
+
+**Policy state machine:**
+```
+Pending → Active → Suspended → Canceled
+                ↘ Renewed
+                ↘ Endorsed
+```
+
+**Key features:**
+- Policy issuance from accepted quotations
+- Endorsement workflows (changes in coverage or insured objects)
+- Renewal processing
+- Integration with Billing and Document services
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

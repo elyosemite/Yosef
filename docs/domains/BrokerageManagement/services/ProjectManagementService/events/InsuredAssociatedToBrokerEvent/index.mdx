@@ -1,0 +1,36 @@
+---
+id: InsuredAssociatedToBrokerEvent
+name: Insured Associated To Broker
+version: 0.1.0
+summary: |
+  Published when an existing Insured is associated to a Broker within the same Brokerage.
+owners:
+  - yosef-team
+badges:
+  - content: New — not yet in code
+    backgroundColor: yellow
+    textColor: yellow
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Emitted when the N:M association between an Insured and a Broker is created. The Insured must already exist at the Brokerage level before being associated to a Broker.
+
+**Business rule:** Both the Insured and the Broker must belong to the same Brokerage.
+
+## Payload
+
+```json title="Example payload"
+{
+  "insuredId": "e5e29b12-0b40-4c3b-9d28-9a3b5c0f0e1d",
+  "brokerId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "brokerageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "associatedAt": "2025-03-05T14:05:00Z"
+}
+```
+
+<NodeGraph />
+
+<Footer />

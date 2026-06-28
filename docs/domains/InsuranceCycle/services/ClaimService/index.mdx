@@ -1,0 +1,54 @@
+---
+id: ClaimService
+version: 0.1.0
+name: Claim Service
+summary: |
+  Manages the full lifecycle of insurance claims — from FNOL through investigation, assessment, approval/rejection, and settlement.
+owners:
+  - yosef-team
+sends:
+  - id: ClaimRegistered
+  - id: ClaimValidated
+  - id: ClaimUnderInvestigation
+  - id: ClaimDocumentsRequested
+  - id: ClaimApproved
+  - id: ClaimRejected
+  - id: ClaimSettled
+  - id: ClaimFraudSuspected
+receives:
+  - id: PolicyIssued
+repository:
+  language: Gleam
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/claim'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Claim Service** is mission-critical — claims are the "moment of truth" for Insureds. It manages the complete lifecycle from First Notice of Loss (FNOL) to settlement.
+
+**Actors:** Insureds (Policyholders), Agents/Brokers, Claims Adjusters, Back-office/Insurer Staff.
+
+**Claim lifecycle:**
+```
+Registered → Under Investigation → Awaiting Documents → Approved/Rejected → Settled
+```
+
+**Technology:** Gleam / Wisp (Erlang BEAM). Chosen for strong type safety, fault-tolerance, and concurrency — critical for a claims engine handling complex workflows.
+
+**Packages:** Squirrel (SQL), Pog (PostgreSQL), Wisp (HTTP API).
+
+**Key features:**
+- FNOL registration for clients or agents
+- Integration with Policy Service for coverage validation
+- Evidence & document handling
+- Fraud detection hooks
+- Settlement management via Payment Service
+- Full audit trail for regulatory compliance
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

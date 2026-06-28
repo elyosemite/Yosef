@@ -1,0 +1,94 @@
+---
+dictionary:
+  - id: Brokerage
+    name: Brokerage
+    summary: 'The root organization — a large insurance company that holds the platform contract and owns Brokers.'
+    description: |
+      A Brokerage is the top-level entity in the Yosef hierarchy. It represents a large insurance company
+      that operates on the platform and delegates sales and customer management to sub-companies called Brokers.
+
+      Key behaviors:
+      - Can be created, renamed, and archived (soft-deleted)
+      - Owns one or more Brokers
+      - Owns one or more Projects (insurance product lines)
+      - Cannot be deleted once it has active Brokers or Policies
+
+      Previously called "Organization" in the codebase — rename on sight.
+    icon: BuildingOffice2
+
+  - id: Broker
+    name: Broker
+    summary: 'A sub-company operating under a Brokerage, granted access to sell insurance via Yosef.'
+    description: |
+      A Broker is registered under exactly one Brokerage and is responsible for onboarding Insureds and
+      requesting Quotations on their behalf.
+
+      Key behaviors:
+      - Belongs to exactly one Brokerage (modeled as entity inside the Brokerage aggregate)
+      - Cannot have sub-Brokers (two-level hierarchy is fixed)
+      - Can be associated to Insureds (the association is owned by the Insured aggregate)
+      - Can request Quotations for Insureds within the Projects owned by its Brokerage
+    icon: BuildingStorefront
+
+  - id: Insured
+    name: Insured
+    summary: 'The customer (natural person or legal entity) who holds or will hold an insurance Policy.'
+    description: |
+      An Insured is registered once at the Brokerage level and may be served by multiple Brokers (N:M).
+      They are the subject of Quotations, Policies, and Claims.
+
+      Key behaviors:
+      - Belongs to exactly one Brokerage (registered there, no duplication)
+      - Associated to one or more Brokers within that Brokerage via a BrokerInsured join
+      - Can have multiple active Policies across different Projects
+      - Can file Claims against their Policies
+      - A Brokerage has a consolidated view of all its Insureds across all Brokers
+      - Typed via InsuredType discriminator: Individual (CPF) or Corporate (CNPJ)
+
+      Do not use "Client" or "Customer" — the canonical term is Insured.
+    icon: UserCircle
+
+  - id: Project
+    name: Project
+    summary: 'An insurance product line owned by a Brokerage (e.g., Bike Insurance, Ship Insurance).'
+    description: |
+      A Project scopes the type of insurance being sold. Each Quotation and Policy is associated with a Project.
+
+      Examples:
+      - "Bike Insurance" project
+      - "Ship Insurance" project
+      - "Aircraft Insurance" project
+    icon: FolderOpen
+
+  - id: Quotation
+    name: Quotation
+    summary: 'A pricing proposal for an insurance product, tied to an Insured and a Project.'
+    description: |
+      A Quotation is created by a Broker on behalf of an Insured for a specific Project. It contains
+      the proposed coverage terms and premium. A Quotation may be approved, rejected, or expire.
+    icon: DocumentText
+
+  - id: Policy
+    name: Policy
+    summary: 'The final insurance contract issued from an approved Quotation.'
+    description: |
+      A Policy is the binding legal contract between the Insured and the Brokerage. It is generated
+      from an approved Quotation and defines coverage, premium, and validity period.
+    icon: ShieldCheck
+
+  - id: Claim
+    name: Claim
+    summary: 'A formal request by an Insured to receive benefits under an active Policy.'
+    description: |
+      The full Claim lifecycle: FNOL (First Notice of Loss) → Investigation → Assessment → Approval/Rejection → Settlement.
+    icon: ClipboardDocumentList
+
+  - id: DomainEvent
+    name: Domain Event
+    summary: 'A record that something meaningful happened in the domain. Always named in past tense.'
+    description: |
+      Domain Events are the primary communication mechanism between services in Yosef.
+      Examples: BrokerageCreatedEvent, BrokerRegisteredEvent, InsuredRegisteredEvent.
+      They are published via the Outbox Pattern and consumed by EventProcessor.
+    icon: BoltSlash
+---

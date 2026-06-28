@@ -1,0 +1,50 @@
+---
+id: BrokerageManagement
+name: Brokerage Management
+summary: Manages the organizational hierarchy of the insurance platform — Brokerages, Brokers, Insureds, and Projects.
+version: 0.1.0
+owners:
+  - yosef-team
+services:
+  - id: ProjectManagementService
+badges:
+  - content: Core Domain
+    backgroundColor: blue
+    textColor: blue
+    icon: BuildingOfficeIcon
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Brokerage Management** domain is the root organizational context of the Yosef platform. It governs the two-level hierarchy through which insurance is distributed:
+
+```
+Brokerage  — a large insurance company (root organization)
+└── Broker — a sub-company granted access to sell via Yosef
+    └── Insured — the policyholder / customer
+```
+
+A **Brokerage** owns one or more **Brokers**. Brokers cannot have sub-Brokers — the hierarchy is fixed at two levels.
+
+An **Insured** is registered once at the **Brokerage** level and may be served by multiple Brokers within that Brokerage (N:M via `BrokerInsured`). This prevents duplicate records when the same person has policies under different Brokers, and gives the Brokerage a consolidated view of all its Insureds.
+
+**Projects** are insurance product lines (e.g., Bike Insurance, Ship Insurance) scoped to a Brokerage.
+
+## Ubiquitous Language
+
+| Term | Definition |
+|---|---|
+| **Brokerage** | Root organization. The large insurance company that owns the platform contract. |
+| **Broker** | Sub-organization operating under a Brokerage. Can onboard Insureds and request Quotations. |
+| **Insured** | The customer (natural or legal person) who holds or will hold an insurance Policy. |
+| **Project** | An insurance product line managed by a Brokerage (e.g., "Bike Insurance"). Scopes Quotations and Policies. |
+
+## Architecture
+
+<NodeGraph />
+
+<MessageTable format="all" title="Domain messages" />
+
+<Footer />

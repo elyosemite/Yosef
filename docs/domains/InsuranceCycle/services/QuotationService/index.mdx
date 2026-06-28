@@ -1,0 +1,38 @@
+---
+id: QuotationService
+version: 0.1.0
+name: Quotation Service
+summary: |
+  Generates insurance quotations by combining customer-provided answers with product parameters. Supports real-time premium calculation and quote lifecycle.
+owners:
+  - yosef-team
+sends:
+  - id: QuoteStarted
+  - id: QuoteCalculated
+  - id: QuoteAccepted
+  - id: QuoteExpired
+repository:
+  language: Go
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Quotation'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Quotation Service** is responsible for generating insurance quotations. It takes customer-provided answers and applies product parameters to calculate a real-time premium.
+
+**Actors:** Clients, Agents, Brokers.
+
+**Key features:**
+- Start and manage quotations
+- Real-time premium calculation using product factors
+- Support for quote acceptance and expiration
+- Cache integration with Product Service for fast evaluations
+- Audit of all quotations for analytics
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

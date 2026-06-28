@@ -1,0 +1,32 @@
+---
+id: BrokerageNameUpdatedEvent
+name: Brokerage Name Updated
+version: 0.1.0
+summary: |
+  Published when the name of an existing Brokerage is changed.
+owners:
+  - yosef-team
+badges:
+  - content: Existing in code
+    backgroundColor: green
+    textColor: green
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Emitted when a Brokerage's name is updated. Previously named `OrgNameUpdatedEvent`.
+
+## Payload
+
+```json title="Example payload"
+{
+  "brokerageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "brokerageName": "Coastal Risk Group"
+}
+```
+
+<NodeGraph />
+
+<Footer />

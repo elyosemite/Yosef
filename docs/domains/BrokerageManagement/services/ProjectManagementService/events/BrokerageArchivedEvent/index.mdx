@@ -1,0 +1,35 @@
+---
+id: BrokerageArchivedEvent
+name: Brokerage Archived
+version: 0.1.0
+summary: |
+  Published when a Brokerage is archived (soft-deleted / deactivated).
+owners:
+  - yosef-team
+badges:
+  - content: Existing in code
+    backgroundColor: green
+    textColor: green
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Emitted when a Brokerage is archived. Archiving is a soft-delete: the `Active` flag is set to `false`. Previously named `OrganizationArchivedEvent`.
+
+Downstream consumers should cascade the deactivation to associated Brokers and suspend their ability to create new Quotations.
+
+## Payload
+
+```json title="Example payload"
+{
+  "brokerageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "archivedAt": "2025-06-01T08:00:00Z",
+  "active": false
+}
+```
+
+<NodeGraph />
+
+<Footer />

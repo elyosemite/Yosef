@@ -1,0 +1,40 @@
+---
+id: ProjectManagementService
+version: 0.1.0
+name: Project Management Service
+summary: |
+  Manages Brokerages, Brokers, Insureds, and Projects. The first deliverable of the Yosef platform.
+owners:
+  - yosef-team
+sends:
+  - id: BrokerageCreatedEvent
+  - id: BrokerageArchivedEvent
+  - id: BrokerageNameUpdatedEvent
+  - id: BrokerRegisteredEvent
+  - id: InsuredRegisteredEvent
+  - id: InsuredAssociatedToBrokerEvent
+  - id: ProjectCreatedEvent
+repository:
+  language: C#
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/ProjectManagement'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Project Management Service** is a .NET 9 C# microservice that owns the organizational hierarchy of the Yosef platform. It is the first service delivered and serves as the foundation upon which Quotation and Policy services operate.
+
+**Responsibilities:**
+- CRUD for Brokerages (formerly Organizations)
+- Registration and management of Brokers under a Brokerage
+- Registration of Insureds under a Broker
+- Management of Projects (insurance product lines) owned by a Brokerage
+
+**Architecture patterns used:** DDD, Clean Architecture, CQRS (MediatR), Outbox Pattern, Event Sourcing.
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

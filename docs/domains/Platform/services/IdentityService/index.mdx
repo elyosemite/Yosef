@@ -1,0 +1,42 @@
+---
+id: IdentityService
+version: 0.1.0
+name: Identity Service
+summary: |
+  Centralized authentication, authorization, and user management. Entry point for all identity and permissions across Brokers, Agents, and Insureds.
+owners:
+  - yosef-team
+sends:
+  - id: BrokerCreated
+  - id: BrokerUpdated
+  - id: AgentCreated
+  - id: AgentUpdated
+  - id: InsuredRegistered
+  - id: InsuredUpdated
+  - id: UserRoleAssigned
+  - id: UserRoleRevoked
+repository:
+  language: Python
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Identity'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Identity Service** is the entry point for all user identity and permissions. It integrates with **KeyCloak** (OAuth2/OIDC) for authentication and enforces role-based access control across the platform.
+
+**Actors:** Brokers (companies), Agents (sellers), Insureds (policyholders), System administrators.
+
+**Key features:**
+- User registration (Brokers, Agents, Insureds)
+- OAuth2/JWT authentication via KeyCloak
+- Role-based access control (RBAC)
+- Multi-tenant support for multiple Brokerages
+- Audit logging for compliance
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

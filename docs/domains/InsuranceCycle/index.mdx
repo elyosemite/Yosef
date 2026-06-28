@@ -1,0 +1,35 @@
+---
+id: InsuranceCycle
+name: Insurance Cycle
+summary: The core insurance lifecycle — from quotation generation to policy issuance and claim settlement.
+version: 0.1.0
+owners:
+  - yosef-team
+services:
+  - id: QuotationService
+  - id: PolicyService
+  - id: ClaimService
+badges:
+  - content: Core Domain
+    backgroundColor: blue
+    textColor: blue
+    icon: ShieldCheckIcon
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Insurance Cycle** domain covers the full lifecycle of an insurance contract:
+
+1. **Quotation** — a Broker generates a pricing proposal for an Insured on a given Project.
+2. **Policy** — an approved Quotation becomes a binding Policy (the insurance contract).
+3. **Claim** — an Insured files a claim against an active Policy when a loss event occurs.
+
+## Architecture
+
+<NodeGraph />
+
+<MessageTable format="all" title="Domain messages" />
+
+<Footer />

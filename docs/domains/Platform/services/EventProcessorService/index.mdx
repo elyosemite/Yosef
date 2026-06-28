@@ -1,0 +1,36 @@
+---
+id: EventProcessorService
+version: 0.1.0
+name: Event Processor Service
+summary: |
+  The asynchronous backbone of the platform. Routes, enriches, and processes domain events from all services via the Outbox pattern.
+owners:
+  - yosef-team
+sends:
+  - id: EventReprocessed
+  - id: EventEnriched
+repository:
+  language: C#
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/EventProcessor'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Event Processor Service** is a .NET 9 Worker Service that acts as the event-driven backbone of the platform. It reads domain events from the Outbox table and routes them to downstream consumers.
+
+**Actors:** Internal only — no direct human interaction.
+
+**Key features:**
+- Outbox pattern consumer (polls and dispatches domain events)
+- Event bus integration (RabbitMQ, Kafka, NATS)
+- Retry logic and Dead Letter Queue (DLQ)
+- Event enrichment (adds metadata before forwarding)
+- Audit logging of all processed events
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

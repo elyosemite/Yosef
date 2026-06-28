@@ -1,0 +1,39 @@
+---
+id: ProductService
+version: 0.1.0
+name: Product Service
+summary: |
+  Manages insurance products, dynamic form builders, and parameterized pricing factors. Enables product specialists to publish products without developer intervention.
+owners:
+  - yosef-team
+sends:
+  - id: ProductVersionCreated
+  - id: ProductPublished
+  - id: ProductDeprecated
+  - id: FormStructureChanged
+  - id: ParameterizationChanged
+repository:
+  language: TypeScript
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Product'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Product Service** allows insurance specialists and actuaries to create and publish insurance products without developer intervention. It powers the Quotation Service's pricing engine.
+
+**Actors:** Product specialists, Actuaries, Brokers.
+
+**Key features:**
+- Product catalog management
+- Dynamic form builder (multi-choice, numeric, boolean, conditional questions)
+- Parametrization engine (weights, factors, pricing rules)
+- Product versioning and publishing workflow
+- Sandbox testing for pricing formulas
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

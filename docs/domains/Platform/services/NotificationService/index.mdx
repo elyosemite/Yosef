@@ -1,0 +1,42 @@
+---
+id: NotificationService
+version: 0.1.0
+name: Notification Service
+summary: |
+  Sends notifications via email, SMS, WhatsApp, and push. Consumes domain events and dispatches messages through multiple channels.
+owners:
+  - yosef-team
+sends:
+  - id: NotificationSent
+  - id: NotificationFailed
+receives:
+  - id: QuoteCalculated
+  - id: PolicyIssued
+  - id: ClaimRegistered
+  - id: ClaimApproved
+  - id: ClaimRejected
+  - id: ClaimSettled
+repository:
+  language: TypeScript
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Notification'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Notification Service** acts as an event consumer and dispatcher for all outbound communications. Built with TypeScript/Node.js to handle async I/O and third-party API integrations efficiently.
+
+**Actors:** Clients, Brokers, Agents.
+
+**Key features:**
+- Email / SMS / Push / WhatsApp integration
+- Message templating
+- Retry and queueing for failed notifications
+- Per-user multi-channel preferences
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

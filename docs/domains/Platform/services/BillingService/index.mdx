@@ -1,0 +1,40 @@
+---
+id: BillingService
+version: 0.1.0
+name: Billing Service
+summary: |
+  Generates invoices and manages premium installments. Tracks outstanding amounts and overdue invoices.
+owners:
+  - yosef-team
+sends:
+  - id: InvoiceGenerated
+  - id: InvoiceOverdue
+  - id: InvoiceCanceled
+  - id: InvoicePaid
+receives:
+  - id: PolicyIssued
+repository:
+  language: Python
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Billing'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Billing Service** is responsible for generating invoices and managing premium installment plans for active Policies.
+
+**Actors:** Clients, Back-office financial team.
+
+**Key features:**
+- Invoice generation based on policy premiums
+- Installment plan management (monthly, yearly, custom)
+- Invoice lifecycle (issued → paid / overdue / canceled)
+- Automatic overdue detection
+- Integration with external ERP if needed
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

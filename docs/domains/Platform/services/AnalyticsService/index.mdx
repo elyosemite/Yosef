@@ -1,0 +1,34 @@
+---
+id: AnalyticsService
+version: 0.1.0
+name: Analytics Service
+summary: |
+  Aggregates domain events for reporting and dashboards. Provides business insights into quotes, policies, payments, churn, claims, and broker performance.
+owners:
+  - yosef-team
+sends:
+  - id: ReportGenerated
+repository:
+  language: Python
+  url: 'https://github.com/elyosemite/Yosef/tree/main/src/Analytics'
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Analytics Service** consumes domain events from across the platform and aggregates them into a data warehouse for reporting and dashboards.
+
+**Actors:** Executives, Brokers, Analysts.
+
+**Key features:**
+- Event aggregation and storage (data warehouse)
+- Dashboard APIs (KPIs, conversion rates, loss ratios)
+- Predictive analytics integration (ML pipelines)
+- Broker-level analytics for performance monitoring
+
+## Architecture Diagram
+
+<NodeGraph />
+
+<Footer />

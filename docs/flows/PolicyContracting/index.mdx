@@ -1,0 +1,57 @@
+---
+id: PolicyContracting
+name: Policy Contracting Process
+summary: End-to-end flow from broker login through quotation, proposal acceptance, payment, and policy issuance.
+version: 0.1.0
+owners:
+  - yosef-team
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+This flow describes the happy path for issuing an insurance policy in Yosef — from the moment a Broker logs in to the moment the Insured receives their policy document.
+
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+
+    actor Broker as Broker
+    participant Identity as IdentityService
+    participant Quotation as QuotationService
+    participant Policy as PolicyService
+    participant Notification as NotificationService
+    participant BrokerSystem as Message Broker
+
+    Broker ->> Identity: Login
+    Identity ->> Identity: Validate credentials & generate token
+    Identity -->> BrokerSystem: LoggedBrokerEvent
+    Identity ->> Broker: Return JWT token
+
+    Broker ->> Quotation: RequestQuote
+    Quotation ->> Quotation: Validate token & calculate premium
+    Quotation -->> BrokerSystem: QuoteCalculated
+
+    Quotation ->> Quotation: CreateProposal
+    Quotation -->> BrokerSystem: ProposalCreated
+
+    BrokerSystem -->> Notification: ProposalCreated
+    Notification ->> Notification: SendProposalEmail
+    Notification -->> BrokerSystem: NotificationSent
+
+    Broker ->> Quotation: AcceptProposal
+    Quotation -->> BrokerSystem: QuoteAccepted
+
+    BrokerSystem -->> Policy: QuoteAccepted
+    Policy ->> Policy: IssuePolicy
+    Policy -->> BrokerSystem: PolicyIssued
+
+    BrokerSystem -->> Notification: PolicyIssued
+    Notification ->> Notification: SendPolicyIssuedEmail
+    Notification -->> BrokerSystem: NotificationSent
+```
+
+<Footer />

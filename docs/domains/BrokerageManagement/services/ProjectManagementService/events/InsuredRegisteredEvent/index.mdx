@@ -1,0 +1,36 @@
+---
+id: InsuredRegisteredEvent
+name: Insured Registered
+version: 0.1.0
+summary: |
+  Published when a new Insured (customer/policyholder) is registered under a Broker.
+owners:
+  - yosef-team
+badges:
+  - content: New — not yet in code
+    backgroundColor: yellow
+    textColor: yellow
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Emitted when an Insured is registered under a Broker. An Insured is the natural person or legal entity that will hold an insurance Policy.
+
+**Business rule:** An Insured belongs to exactly one Broker. Contact fields (document, email, phone) are TBD — subject to the next grilling session on Insured ownership and identity.
+
+## Payload
+
+```json title="Example payload"
+{
+  "insuredId": "e5e29b12-0b40-4c3b-9d28-9a3b5c0f0e1d",
+  "brokerId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "name": "João da Silva",
+  "registeredAt": "2025-03-05T14:00:00Z"
+}
+```
+
+<NodeGraph />
+
+<Footer />

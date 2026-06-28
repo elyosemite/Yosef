@@ -1,0 +1,33 @@
+---
+id: Platform
+name: Platform
+summary: Supporting services that underpin the entire Yosef platform — identity, eventing, notifications, analytics, billing, documents, and products.
+version: 0.1.0
+owners:
+  - yosef-team
+services:
+  - id: IdentityService
+  - id: EventProcessorService
+  - id: NotificationService
+  - id: AnalyticsService
+  - id: BillingService
+  - id: DocumentService
+  - id: ProductService
+badges:
+  - content: Supporting Domain
+    backgroundColor: purple
+    textColor: purple
+    icon: CpuChipIcon
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+The **Platform** domain groups the cross-cutting and supporting services that all other domains depend on.
+
+<NodeGraph />
+
+<MessageTable format="all" title="Platform messages" />
+
+<Footer />

@@ -1,0 +1,62 @@
+---
+title: "ADR-001: REST API Versioning Strategy"
+summary: All REST endpoints in Yosef microservices are prefixed with /api/v1/ to enable non-breaking evolution of the API surface.
+badges:
+  - content: 'Accepted'
+    backgroundColor: 'green'
+    textColor: 'green'
+  - content: 'ProjectManagement'
+    backgroundColor: 'blue'
+    textColor: 'blue'
+---
+
+## Status
+
+**Accepted** — 2025-06-28
+
+## Context
+
+The ProjectManagement Service exposes a REST HTTP API consumed by other services and future front-end clients. Without a versioning strategy, any breaking change (renaming a field, removing an endpoint, changing a response shape) would force all consumers to update simultaneously.
+
+The service is the first deliverable of the Yosef platform, so establishing the convention early prevents inconsistency across future services.
+
+## Decision
+
+All REST endpoints across Yosef microservices are prefixed with `/api/v{n}/`, where `n` is the major version number. The initial version is `v1`.
+
+### Route Map — ProjectManagement Service v1
+
+| Method | Path | Operation |
+|--------|------|-----------|
+| `POST` | `/api/v1/brokerages` | Create Brokerage |
+| `GET` | `/api/v1/brokerages/{id}` | Get Brokerage by ID |
+| `PATCH` | `/api/v1/brokerages/{id}/name` | Rename Brokerage |
+| `DELETE` | `/api/v1/brokerages/{id}` | Archive Brokerage (soft-delete) |
+| `POST` | `/api/v1/brokerages/{id}/brokers` | Register Broker |
+| `GET` | `/api/v1/brokerages/{id}/brokers` | List Brokers of a Brokerage |
+| `POST` | `/api/v1/brokerages/{id}/projects` | Create Project |
+| `POST` | `/api/v1/brokerages/{id}/insureds` | Register Insured |
+| `GET` | `/api/v1/brokerages/{id}/insureds` | List Insureds of a Brokerage |
+| `GET` | `/api/v1/brokerages/{id}/brokers/{brokerId}/insureds` | List Insureds of a Broker |
+| `POST` | `/api/v1/insureds/{id}/brokers` | Associate Insured to Broker |
+
+### Version increment rules
+
+- **Patch / minor additions** (new optional fields, new endpoints): no version bump — backwards-compatible.
+- **Breaking changes** (removed fields, renamed properties, changed response shape): increment to `v2`, keep `v1` alive for one deprecation cycle.
+
+## Consequences
+
+**Positive:**
+- Consumers can target a specific version and remain stable while `v2` is developed.
+- Consistent convention across all Yosef services from day one.
+- `.NET` implementation: `MapGroup("/api/v1")` in Presentation layer, no per-route duplication.
+
+**Negative:**
+- Maintaining multiple versions simultaneously adds operational overhead. Mitigated by the deprecation policy above.
+
+## Alternatives Considered
+
+- **No versioning prefix** (`/brokerages`): Rejected. Any breaking change becomes a forced migration for all consumers.
+- **Header-based versioning** (`Accept: application/vnd.yosef.v1+json`): Rejected. Harder to test, harder to discover, not idiomatic for .NET Minimal API.
+- **Query-string versioning** (`?version=1`): Rejected. Makes URLs ugly and caching harder.
