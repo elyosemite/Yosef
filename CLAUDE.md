@@ -114,3 +114,80 @@ All .NET services instrument via `OpenTelemetry` SDK.
 
 PostgreSQL (primary DB) · RabbitMQ (async messaging) · KeyCloak (IAM) · HashiCorp Vault (secrets).
 Local dev via `docker-compose up -d`.
+
+---
+
+## Implementation Rules
+
+These rules apply to every session, every phase.
+
+### Step-by-step execution
+- Implement **one phase at a time**. Do not start the next phase until the current one builds and its commits are done.
+- Every phase is broken into **logical blocks**. Each block gets its own commit before moving on.
+- After each commit, verify the build passes (`dotnet build`) before proceeding.
+
+### Commit discipline
+- **One logical block per commit** — do not mix unrelated files.
+- Keep commits small. Typical logical blocks and what goes in each commit:
+
+| Block | Files in the commit |
+|---|---|
+| Domain event | `*Event.cs` + EventCatalog event `index.mdx` |
+| Domain aggregate change | aggregate `.cs` + any new value objects |
+| Application handler | `*Request.cs`, `*Response.cs`, `*Handler.cs`, `*Validator.cs` |
+| Infrastructure model | `*DataModel.cs`, `*Configuration.cs`, `*Profile.cs` (AutoMapper) |
+| Repository | `I*Repository.cs`, `*Repository.cs`, DI registration update |
+| Presentation endpoint | `*Request.cs`, `*Response.cs`, endpoint `.cs`, route registration in `Program.cs` |
+| Docs update | EventCatalog `index.mdx` files affected by the block |
+| Migration | only the generated migration files |
+
+- Docs updates may be bundled into the same commit as the block they document **or** committed immediately after — never deferred to "later".
+- Never commit generated code (migrations) together with domain/application code.
+
+### Documentation
+- Every command, query, or event implemented must be reflected in EventCatalog **in the same session**.
+- The EventCatalog service `index.mdx` `sends:` / `receives:` lists must stay in sync with implemented events.
+
+---
+
+## Development Plan — ProjectManagement MVP
+
+Legend: `done` · `in progress` · `pending`
+
+### Phase 0 — Foundation
+
+| Step | Description | Status |
+|---|---|---|
+| 0.1 | Rename `Organization` → `Brokerage` across Domain, Application, Infrastructure (85 files). Keep DB column names via `HasColumnName`. | done |
+| 0.2 | Rename Presentation layer (`CreateOrganization` → `CreateBrokerage`, `GetOrganization` → `GetBrokerage`). Update `Program.cs`. Fix routes to `/api/v1/`. Add ProblemDetails middleware. | pending |
+
+### Phase 1 — Brokerage CRUD
+
+| Step | Description | Status |
+|---|---|---|
+| 1.1 | `CreateBrokerageCommand`: handler, validator, request/response + endpoint + EventCatalog | pending |
+| 1.2 | `ArchiveBrokerageCommand`: handler, validator, request/response + endpoint + EventCatalog | pending |
+| 1.3 | `RenameBrokerageCommand`: handler, validator, request/response + endpoint + EventCatalog | pending |
+| 1.4 | `GetBrokerageQuery`: handler, request/response + endpoint + EventCatalog | pending |
+| 1.5 | `CreateProjectCommand`: handler, validator, request/response + endpoint + EventCatalog | pending |
+
+### Phase 2 — Broker
+
+| Step | Description | Status |
+|---|---|---|
+| 2.1 | Domain: `Broker` entity inside `Brokerage` aggregate + `BrokerRegisteredEvent` | pending |
+| 2.2 | `RegisterBrokerCommand`: handler, validator, request/response + Infrastructure (data model, config, AutoMapper) + `IBrokerRepository` + `BrokerRepository` + DI | pending |
+| 2.3 | `RegisterBrokerCommand` endpoint + route in `Program.cs` | pending |
+| 2.4 | `ListBrokersQuery`: handler + endpoint + EventCatalog | pending |
+
+### Phase 3 — Insured
+
+| Step | Description | Status |
+|---|---|---|
+| 3.1 | Domain: `Address` value object + `BrokerInsured` value object + `Insured` aggregate root | pending |
+| 3.2 | Domain events: `InsuredRegisteredEvent` + `InsuredAssociatedToBrokerEvent` | pending |
+| 3.3 | `RegisterInsuredCommand`: handler, validator, request/response + Infrastructure (data model, config, AutoMapper) + `IInsuredRepository` + `InsuredRepository` + DI | pending |
+| 3.4 | `RegisterInsuredCommand` endpoint + route in `Program.cs` | pending |
+| 3.5 | `AssociateInsuredToBrokerCommand`: handler, validator, request/response + endpoint + route | pending |
+| 3.6 | `ListInsuredsByBrokerageQuery`: handler + endpoint | pending |
+| 3.7 | `ListInsuredsByBrokerQuery`: handler + endpoint + EventCatalog (all list queries) | pending |
