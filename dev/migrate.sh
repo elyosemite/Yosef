@@ -28,7 +28,7 @@ echo "Running the migration for the ProjectManagement..."
 dotnet-ef database update \
     --project ./ProjectManagement.Infrastructure/ProjectManagement.Infrastructure.csproj \
     --startup-project ./ProjectManagement.Presentation/ProjectManagement.Presentation.csproj \
-    --context OrganizationContext \
+    --context BrokerageContext \
     -- "GlobalSettings:PostgreSql:ConnectionString=\"Host=postgres;Username=postgres;Password=example123;Database=banco_docker\""
 
 echo "Running the migration for the Quotation..."

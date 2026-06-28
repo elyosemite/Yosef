@@ -69,7 +69,7 @@ function Run-Migration([string]$provider, [string]$dbName) {
     dotnet ef database update `
         --project "$infraDir/ProjectManagement.Infrastructure.csproj" `
         --startup-project "$presentationDir/ProjectManagement.Presentation.csproj" `
-        --context "OrganizationContext" `
+        --context "BrokerageContext" `
         --no-build `
         "$connectionString"
 
