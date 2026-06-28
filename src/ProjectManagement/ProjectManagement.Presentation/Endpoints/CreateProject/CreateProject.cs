@@ -5,19 +5,19 @@ namespace ProjectManagement.Presentation.Endpoints.CreateProject;
 
 public class CreateProject
 {
-    private readonly IOrganizationRepository _organizationRepository;
+    private readonly IBrokerageRepository _brokerageRepository;
 
-    public CreateProject(IOrganizationRepository organizationRepository)
+    public CreateProject(IBrokerageRepository brokerageRepository)
     {
-        _organizationRepository = organizationRepository;
+        _brokerageRepository = brokerageRepository;
     }
 
     public async Task<IResult> ActionAsync(CreateProjectRequest req)
     {
-        var organization = await _organizationRepository.GetByIdAsync(req.OrganizationIdentifier);
+        var brokerage = await _brokerageRepository.GetByIdAsync(req.OrganizationIdentifier);
 
-        if (organization == null)
-            return TypedResults.NotFound($"Organization with Id {req.OrganizationIdentifier} not found.");
+        if (brokerage is null)
+            return TypedResults.NotFound($"Brokerage with Id {req.OrganizationIdentifier} not found.");
 
         var project = Project.ProjectFactory(
             req.ProjectName,
@@ -25,12 +25,12 @@ public class CreateProject
             req.StarsCount,
             req.ForksCount,
             req.ContributorsCount,
-            organization.Identifier);
+            brokerage.Identifier);
 
-        organization.AddProject(project);
-        await _organizationRepository.UpsertAsync(organization);
+        brokerage.AddProject(project);
+        await _brokerageRepository.UpsertAsync(brokerage);
 
-        var result = await _organizationRepository.GetByIdAsync(req.OrganizationIdentifier);
+        var result = await _brokerageRepository.GetByIdAsync(req.OrganizationIdentifier);
         return TypedResults.Ok(result);
     }
 }
