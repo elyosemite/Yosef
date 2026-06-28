@@ -10,8 +10,8 @@ using ProjectManagement.Infrastructure.Context;
 
 namespace ProjectManagement.Infrastructure.Migrations
 {
-    [DbContext(typeof(OrganizationContext))]
-    partial class OrganizationContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(BrokerageContext))]
+    partial class BrokerageContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,7 @@ namespace ProjectManagement.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ProjectManagement.Infrastructure.Model.OrganizationDataModel", b =>
+            modelBuilder.Entity("ProjectManagement.Infrastructure.Model.BrokerageDataModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +112,7 @@ namespace ProjectManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectManagement.Infrastructure.Model.ProjectDataModel", b =>
                 {
-                    b.HasOne("ProjectManagement.Infrastructure.Model.OrganizationDataModel", "Organization")
+                    b.HasOne("ProjectManagement.Infrastructure.Model.BrokerageDataModel", "Organization")
                         .WithMany("Projects")
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -121,7 +121,7 @@ namespace ProjectManagement.Infrastructure.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("ProjectManagement.Infrastructure.Model.OrganizationDataModel", b =>
+            modelBuilder.Entity("ProjectManagement.Infrastructure.Model.BrokerageDataModel", b =>
                 {
                     b.Navigation("Projects");
                 });

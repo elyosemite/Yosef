@@ -6,9 +6,9 @@ using Serilog;
 
 namespace ProjectManagement.Infrastructure.Context;
 
-public class OrganizationContextFactory : IDesignTimeDbContextFactory<OrganizationContext>
+public class BrokerageContextFactory : IDesignTimeDbContextFactory<BrokerageContext>
 {
-    public OrganizationContext CreateDbContext(string[] args)
+    public BrokerageContext CreateDbContext(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
@@ -25,13 +25,13 @@ public class OrganizationContextFactory : IDesignTimeDbContextFactory<Organizati
         ConfigurationBinder.Bind(configuration.GetSection("GlobalSettings"), globalSettings);
         Log.Information("Connection string: {@ConnectionString}", globalSettings.PostgreSql.ConnectionString);
 
-        var optionsBuilder = new DbContextOptionsBuilder<OrganizationContext>();
-        
+        var optionsBuilder = new DbContextOptionsBuilder<BrokerageContext>();
+
         optionsBuilder.UseNpgsql(globalSettings.PostgreSql.ConnectionString);
-        optionsBuilder.UseLoggerFactory(OrganizationContext.EfLoggerFactory);
+        optionsBuilder.UseLoggerFactory(BrokerageContext.EfLoggerFactory);
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.EnableDetailedErrors();
 
-        return new OrganizationContext(globalSettings, optionsBuilder.Options);
+        return new BrokerageContext(globalSettings, optionsBuilder.Options);
     }
 }

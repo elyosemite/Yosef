@@ -15,8 +15,8 @@ public abstract class BaseEntityFrameworkRepository
     protected IServiceScopeFactory ServiceScopeFactory { get; private set; }
     protected IMapper Mapper { get; private set; }
 
-    public OrganizationContext GetDatabaseContext(IServiceScope serviceScope)
+    public BrokerageContext GetDatabaseContext(IServiceScope serviceScope)
     {
-        return serviceScope.ServiceProvider.GetRequiredService<OrganizationContext>();
+        return serviceScope.ServiceProvider.GetRequiredService<BrokerageContext>();
     }
 }

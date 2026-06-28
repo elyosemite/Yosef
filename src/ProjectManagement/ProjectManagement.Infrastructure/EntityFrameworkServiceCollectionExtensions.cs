@@ -11,14 +11,14 @@ public static class EntityFrameworkServiceCollectionExtensions
 {
     public static void AddEFRepository(this IServiceCollection services, IGlobalSettings globalSettings)
     {
-        services.AddDbContext<OrganizationContext>(options =>
+        services.AddDbContext<BrokerageContext>(options =>
         {
             Log.Information("Using connection string: {ConnectionString} in AddEFRepository", globalSettings.PostgreSql.ConnectionString);
             options.UseNpgsql(globalSettings.PostgreSql.ConnectionString);
-            options.UseLoggerFactory(OrganizationContext.EfLoggerFactory);
+            options.UseLoggerFactory(BrokerageContext.EfLoggerFactory);
             options.EnableSensitiveDataLogging();
             options.EnableDetailedErrors();
         });
-        services.AddSingleton<IOrganizationRepository, OrganizationRepository>();
+        services.AddSingleton<IBrokerageRepository, BrokerageRepository>();
     }
 }

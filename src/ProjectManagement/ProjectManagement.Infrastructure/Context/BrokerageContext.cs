@@ -8,7 +8,7 @@ using Yosef.ProjectManagement.Domain.Outbox;
 
 namespace ProjectManagement.Infrastructure.Context;
 
-public class OrganizationContext : DbContext
+public class BrokerageContext : DbContext
 {
     protected readonly IGlobalSettings _globalSettings;
     public static readonly ILoggerFactory EfLoggerFactory = LoggerFactory.Create(builder =>
@@ -18,7 +18,7 @@ public class OrganizationContext : DbContext
         builder.SetMinimumLevel(LogLevel.Information);
     });
 
-    public OrganizationContext(IGlobalSettings globalSettings, DbContextOptions options)
+    public BrokerageContext(IGlobalSettings globalSettings, DbContextOptions options)
         : base(options)
     {
         _globalSettings = globalSettings;
@@ -26,11 +26,11 @@ public class OrganizationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new OrganizationConfiguration());
+        modelBuilder.ApplyConfiguration(new BrokerageConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 
-    public DbSet<OrganizationDataModel> Organization { get; set; }
+    public DbSet<BrokerageDataModel> Brokerage { get; set; }
     public DbSet<OutboxMessage> OutboxMessage { get; set; }
 }

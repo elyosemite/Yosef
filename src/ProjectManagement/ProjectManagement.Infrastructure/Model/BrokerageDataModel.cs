@@ -4,10 +4,10 @@ using ProjectManagement.Domain.Aggregates;
 
 namespace ProjectManagement.Infrastructure.Model;
 
-public class OrganizationDataModel : ITableObject<int>
+public class BrokerageDataModel : ITableObject<int>
 {
     public int Id { get; set; }
-    public string OrganizationName { get; set; } = null!;
+    public string BrokerageName { get; set; } = null!;
     public int ContributorsCount { get; set; }
     public string? Secret { get; set; }
     public Guid Identifier { get; set; }
@@ -21,19 +21,19 @@ public class OrganizationDataModel : ITableObject<int>
     }
 }
 
-public class OrganizationProfile : Profile
+public class BrokerageProfile : Profile
 {
-    public OrganizationProfile()
+    public BrokerageProfile()
     {
-        CreateMap<Organization, OrganizationDataModel>()
+        CreateMap<Brokerage, BrokerageDataModel>()
             .ForMember(dest => dest.Identifier, opt => opt.MapFrom(src => src.Identifier))
-            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.BrokerageName, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.ContributorsCount, opt => opt.MapFrom(src => src.ContributorsCount))
             .ForMember(dest => dest.Secret, opt => opt.MapFrom(src => src.Secret))
             .ForMember(dest => dest.Projects, opt => opt.MapFrom(src => src.Projects));
 
-        CreateMap<OrganizationDataModel, Organization>()
+        CreateMap<BrokerageDataModel, Brokerage>()
             .ForMember(dest => dest.Projects, opt => opt.Ignore())
-            .ConstructUsing(src => Organization.OrganizationFactory(src.Identifier, src.OrganizationName, src.ContributorsCount));
+            .ConstructUsing(src => Brokerage.BrokerageFactory(src.Identifier, src.BrokerageName, src.ContributorsCount));
     }
 }

@@ -15,14 +15,14 @@ public abstract class Repository<TAggregate, TDataModel, TAggregateId, TDataMode
     where TDataModelId : IEquatable<TDataModelId>
 {
     private readonly ILogger<Repository<TAggregate, TDataModel, TAggregateId, TDataModelId>> _logger;
-    public Repository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, Func<OrganizationContext, DbSet<TDataModel>> getDbSet, ILogger<Repository<TAggregate, TDataModel, TAggregateId, TDataModelId>> logger)
+    public Repository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, Func<BrokerageContext, DbSet<TDataModel>> getDbSet, ILogger<Repository<TAggregate, TDataModel, TAggregateId, TDataModelId>> logger)
         : base(serviceScopeFactory, mapper)
     {
         GetDbSet = getDbSet;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    protected Func<OrganizationContext, DbSet<TDataModel>> GetDbSet { get; private set; }
+    protected Func<BrokerageContext, DbSet<TDataModel>> GetDbSet { get; private set; }
 
     public async Task<TAggregate> CreateAsync(TAggregate aggregate)
     {

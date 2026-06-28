@@ -13,7 +13,7 @@ public class ProjectDataModel : ITableObject<int>
     public int ContributorsCount { get; set; }
     public Guid Identifier { get; set; }
     public Guid OrganizationIdentifier { get; set; }
-    public virtual OrganizationDataModel Organization { get; set; } = null!;
+    public virtual BrokerageDataModel Organization { get; set; } = null!;
 
     public void UpdateTableRegisterId(int id)
     {

@@ -8,10 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace ProjectManagement.Infrastructure;
 
-public class OrganizationRepository : Repository<Organization, OrganizationDataModel, Guid, int>, IOrganizationRepository
+public class BrokerageRepository : Repository<Brokerage, BrokerageDataModel, Guid, int>, IBrokerageRepository
 {
-    public OrganizationRepository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, ILogger<OrganizationRepository> logger)
-        : base(serviceScopeFactory, mapper, context => context.Organization, logger)
+    public BrokerageRepository(IServiceScopeFactory serviceScopeFactory, IMapper mapper, ILogger<BrokerageRepository> logger)
+        : base(serviceScopeFactory, mapper, context => context.Brokerage, logger)
     {
     }
 }
