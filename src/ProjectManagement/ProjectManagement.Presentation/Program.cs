@@ -1,8 +1,8 @@
 using AutoMapper;
-using ProjectManagement.Presentation.Endpoints.CreateOrganization;
-using ProjectManagement.Presentation.Endpoints.GetOrganization;
+using ProjectManagement.Presentation.Endpoints.CreateBrokerage;
+using ProjectManagement.Presentation.Endpoints.GetBrokerage;
+using ProjectManagement.Presentation.Endpoints.CreateProject;
 using ProjectManagement.Infrastructure;
-using ProjectManagement.Infrastructure.Model;
 using ProjectManagement.Infrastructure.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -18,9 +18,8 @@ using System.Diagnostics;
 using ProjectManagement.Infrastructure.Metric;
 using ProjectManagement.Application.Repository;
 using Mediator;
-using Yosef.ProjectManagement.Application.UpdateOrganizationName.Organization;
+using Yosef.ProjectManagement.Application.Brokerage.RenameBrokerage;
 using ProjectManagement.Application;
-using ProjectManagement.Infrastructure.DispatcherHandler;
 
 namespace ProjectManagement.Presentation;
 
@@ -113,8 +112,8 @@ public class Program
 
             var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
 
-            // Middleware
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+            builder.Services.AddProblemDetails();
             builder.Services.AddOpenTelemetry()
             .WithTracing(tracerProviderBuilder =>
             {
@@ -134,7 +133,6 @@ public class Program
                         options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     });
-                //.AddConsoleExporter();
             })
             .WithMetrics(meterProviderBuilder =>
             {
@@ -143,7 +141,7 @@ public class Program
                         .AddService("Yosef", serviceInstanceId: Environment.MachineName))
                     .AddAspNetCoreInstrumentation()
                     .AddMeter(Metrics.GreeterMeter.Name)
-                    .AddMeter(Metrics.CreateOrganizationMeter.Name)
+                    .AddMeter(Metrics.CreateBrokerageMeter.Name)
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddSqlClientInstrumentation()
@@ -157,7 +155,6 @@ public class Program
                         options.Endpoint = new Uri("http://otel-collector:4317");
                         options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     });
-                //.AddConsoleExporter();
             });
 
             builder.Services.AddEndpointsApiExplorer();
@@ -170,14 +167,7 @@ public class Program
             });
             builder.Services.AddEFRepository(globalSettings);
             builder.Services.AddApplication();
-            // builder.Services.AddMediator(
-            //     (MediatorOptions options) =>
-            //     {
-            //         options.Assemblies = [typeof(Program)];
-            //         options.ServiceLifetime = ServiceLifetime.Scoped;
-            //     }
-            // );
-           
+
             if (builder.Environment.IsDevelopment())
             {
                 Console.WriteLine("Development environment detected.");
@@ -193,17 +183,11 @@ public class Program
 
             var app = builder.Build();
 
+            app.UseExceptionHandler();
+            app.UseStatusCodePages();
+
             if (app.Environment.IsDevelopment())
             {
-                // app.UseOpenApi();
-                // app.UseSwaggerUi(config =>
-                // {
-                //     config.DocumentTitle = "ProjectManagement API";
-                //     config.Path = "swagger";
-                //     config.DocumentPath = "/swagger/{documentName}/swagger.json";
-                //     config.DocExpansion = "list";
-                // });
-
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProjectManagement API V.1");
@@ -211,79 +195,92 @@ public class Program
                 });
             }
 
-            var organization = app.MapGroup("/organization")
-                .WithTags("OrganizationTag")
-                .WithName("OrganizationName");
+            var brokerages = app.MapGroup("/api/v1/brokerages")
+                .WithTags("Brokerages");
 
 #if DEBUG
             var globalSettingsMapGroup = app.MapGroup("/globalSettings")
-                .WithTags("GlobalSettingsTag")
-                .WithName("GlobalSettingsName");
+                .WithTags("GlobalSettings");
 
-            globalSettingsMapGroup.MapGet("/globalSettings", () => globalSettings)
+            globalSettingsMapGroup.MapGet("/", () => globalSettings)
                 .WithName("GetGlobalSettings")
-                .Produces<GlobalSettings>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound);
+                .Produces<GlobalSettings>(StatusCodes.Status200OK);
 #endif
-            organization.MapPost("/", async ([FromBody] OrganizationRequest req, IValidator<OrganizationRequest> validator, ILogger<CreateOrganization> logger) =>
+
+            brokerages.MapPost("/", async ([FromBody] BrokerageRequest req, IValidator<BrokerageRequest> validator, ILogger<CreateBrokerage> logger) =>
                 {
-                    using var activity = _greeterActivitySource.StartActivity("GreeterActivity");
-                    logger.LogInformation("Sending greeting and creating organization");
+                    using var activity = _greeterActivitySource.StartActivity("CreateBrokerage");
+                    logger.LogInformation("Creating brokerage");
 
                     Metrics.CountGreetings.Add(1);
 
-                    Log.Information("==============> {ConnectionString}", globalSettings.PostgreSql.ConnectionString);
-
-                    var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+                    var brokerageRepository = app.Services.GetRequiredService<IBrokerageRepository>();
                     var mapper = app.Services.GetRequiredService<IMapper>();
 
                     await Delay(logger);
 
-                    var org = await new CreateOrganization(organizationRepository, mapper, logger, validator).ActionAsync(req);
-                    activity?.AddEvent(new ActivityEvent("The application just created one org"));
+                    var result = await new CreateBrokerage(brokerageRepository, mapper, logger, validator).ActionAsync(req);
 
-                    Metrics.CountOrganizationsCreated.Add(1);
-                    activity?.SetTag("greeting", "Hello World!");
-                    activity?.SetTag("organization", req.OrganizationName);
+                    Metrics.CountBrokeragesCreated.Add(1);
+                    activity?.SetTag("brokerage.name", req.BrokerageName);
 
-                    return org;
+                    return result;
                 })
-                .WithName("CreateOrganization")
-                .Produces<OrganizationDataModel>(StatusCodes.Status201Created)
-                .Produces(StatusCodes.Status400BadRequest);
+                .WithName("CreateBrokerage")
+                .Produces<CreateBrokerageResponse>(StatusCodes.Status201Created)
+                .Produces<HttpValidationProblemDetails>(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            organization.MapGet("/organization", async ([FromQuery] Guid req, ILogger<GetOrganization> logger) =>
+            brokerages.MapGet("/{id:guid}", async ([FromRoute] Guid id, ILogger<GetBrokerage> logger) =>
                 {
-                    using var activity = _greeterActivitySource.StartActivity("GetOrganization");
-                    logger.LogInformation($"Get organization by id = {req}");
+                    using var activity = _greeterActivitySource.StartActivity("GetBrokerage");
+                    logger.LogInformation("Get brokerage by id = {Id}", id);
 
-                    var organizationRepository = app.Services.GetRequiredService<IOrganizationRepository>();
+                    var brokerageRepository = app.Services.GetRequiredService<IBrokerageRepository>();
 
                     await Delay(logger);
 
-                    activity?.SetTag("organizationId", req);
+                    activity?.SetTag("brokerage.id", id);
 
-                    var org = await new GetOrganization(organizationRepository)
-                        .ActionAsync(new GetOrganizationRequest(req));
-
-                    return org;
+                    return await new GetBrokerage(brokerageRepository)
+                        .ActionAsync(new GetBrokerageRequest(id));
                 })
-                .WithName("GetOrganization")
-                .Produces(StatusCodes.Status400BadRequest);
+                .WithName("GetBrokerage")
+                .Produces<GetBrokerageResponse>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            organization.MapPost("/id", async ([FromBody] UpdateOrganizationNameRequest req, ILogger<GetOrganization> logger, IMediator mediator) =>
+            brokerages.MapPatch("/{id:guid}/name", async ([FromRoute] Guid id, [FromBody] RenameBrokerageRequest req, ILogger<GetBrokerage> logger, IMediator mediator) =>
                 {
-                    using var activity = _greeterActivitySource.StartActivity("UpdateOrganization");
-                    logger.LogInformation("Get organization by id = {@req}", req);
+                    using var activity = _greeterActivitySource.StartActivity("RenameBrokerage");
+                    logger.LogInformation("Renaming brokerage {Id}", id);
 
-                    activity?.SetTag("organizationId", req);
+                    req.BrokerageId = id;
+                    activity?.SetTag("brokerage.id", id);
 
-                    var response = await mediator.Send(req);
-
-                    return response;
+                    return await mediator.Send(req);
                 })
-                .WithName("UpdateOrganizationName")
-                .Produces(StatusCodes.Status400BadRequest);
+                .WithName("RenameBrokerage")
+                .Produces(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+            brokerages.MapPost("/{id:guid}/projects", async ([FromRoute] Guid id, [FromBody] CreateProjectRequest req, ILogger<CreateProject> logger) =>
+                {
+                    using var activity = _greeterActivitySource.StartActivity("CreateProject");
+                    logger.LogInformation("Creating project for brokerage {Id}", id);
+
+                    var brokerageRepository = app.Services.GetRequiredService<IBrokerageRepository>();
+
+                    req = req with { OrganizationIdentifier = id };
+                    activity?.SetTag("brokerage.id", id);
+
+                    return await new CreateProject(brokerageRepository).ActionAsync(req);
+                })
+                .WithName("CreateProject")
+                .Produces(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
 
             app.MapPrometheusScrapingEndpoint();
             app.Run();
