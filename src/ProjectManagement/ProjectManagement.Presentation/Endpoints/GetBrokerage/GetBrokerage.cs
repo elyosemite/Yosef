@@ -19,10 +19,11 @@ public class GetBrokerage
             return TypedResults.NotFound($"Brokerage with ID {req.BrokerageIdentifier} not found.");
 
         var response = new GetBrokerageResponse(
+            brokerage.Identifier,
             brokerage.Name,
-            brokerage.ContributorsCount,
-            brokerage.Secret,
-            brokerage.Identifier);
+            brokerage.CNPJ,
+            brokerage.Email,
+            brokerage.Phone);
 
         return TypedResults.Ok(response);
     }

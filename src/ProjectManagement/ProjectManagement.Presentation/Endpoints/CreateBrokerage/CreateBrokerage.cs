@@ -40,10 +40,7 @@ public class CreateBrokerage
             return TypedResults.BadRequest(problem);
         }
 
-        var brokerage = Brokerage.BrokerageFactory(req.BrokerageName, req.ContributorsCount);
-
-        if (req.Secret is not null)
-            brokerage.UpdateSecret(req.Secret);
+        var brokerage = Brokerage.BrokerageFactory(req.BrokerageName, req.CNPJ, req.Email, req.Phone);
 
         var result = await _brokerageRepository.CreateAsync(brokerage);
 

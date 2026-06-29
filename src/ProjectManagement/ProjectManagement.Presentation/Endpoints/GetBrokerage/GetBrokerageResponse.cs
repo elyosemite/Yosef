@@ -1,8 +1,9 @@
 namespace ProjectManagement.Presentation.Endpoints.GetBrokerage;
 
 public record GetBrokerageResponse(
+    Guid Identifier,
     string BrokerageName,
-    int ContributorsCount,
-    string? Secret,
-    Guid Identifier
+    string CNPJ,
+    string Email,
+    string? Phone
 );

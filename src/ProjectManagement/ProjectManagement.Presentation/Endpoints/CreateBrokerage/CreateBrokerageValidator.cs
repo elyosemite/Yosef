@@ -8,12 +8,14 @@ public class CreateBrokerageValidator : AbstractValidator<BrokerageRequest>
     {
         RuleFor(x => x.BrokerageName)
             .NotEmpty().WithMessage("Brokerage name cannot be empty.")
-            .MaximumLength(50).WithMessage("Brokerage name cannot exceed 50 characters.");
+            .MaximumLength(100).WithMessage("Brokerage name cannot exceed 100 characters.");
 
-        RuleFor(x => x.ContributorsCount)
-            .GreaterThanOrEqualTo(0).WithMessage("Contributors count must be a non-negative integer.");
+        RuleFor(x => x.CNPJ)
+            .NotEmpty().WithMessage("CNPJ cannot be empty.")
+            .Length(14).WithMessage("CNPJ must be exactly 14 digits.");
 
-        RuleFor(x => x.Secret)
-            .NotEmpty().WithMessage("Secret cannot be null or empty.");
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email cannot be empty.")
+            .EmailAddress().WithMessage("Email must be a valid email address.");
     }
 }
