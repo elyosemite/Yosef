@@ -9,7 +9,7 @@ export const options = {
   },
 };
 
-const ENDPOINT = '/api/v1/brokerages';
+const ENDPOINT = '/api/project-management/api/v1/brokerages';
 
 export default function () {
   group('POST /api/v1/brokerages — happy path', () => {
