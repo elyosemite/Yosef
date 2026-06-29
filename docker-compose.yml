@@ -44,6 +44,9 @@ services:
     container_name: grafana
     ports:
       - "3000:3000" # Porta do Grafana
+    environment:
+      - GF_SERVER_ROOT_URL=http://localhost/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - ./observability/grafana/provisioning/:/etc/grafana/provisioning/
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
