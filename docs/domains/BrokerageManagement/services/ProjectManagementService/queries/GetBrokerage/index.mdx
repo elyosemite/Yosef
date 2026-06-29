@@ -1,0 +1,51 @@
+---
+id: GetBrokerage
+name: Get Brokerage
+version: 0.1.0
+summary: Returns the full details of a brokerage by its unique identifier.
+owners:
+  - yosef-team
+operation:
+  method: GET
+  path: /api/v1/brokerages/{brokerageIdentifier}
+  statusCodes:
+    - "200"
+    - "404"
+badges:
+  - content: REST
+    backgroundColor: blue
+    textColor: blue
+  - content: v1
+    backgroundColor: gray
+    textColor: gray
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Retrieves a single **Brokerage** by its UUID identifier. Returns the brokerage's legal name, CNPJ, contact email, and optional phone number.
+
+## Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `brokerageIdentifier` | `uuid` | ✓ | The unique identifier (GUID) of the brokerage |
+
+## Response
+
+**200 OK** — brokerage found.
+
+```json title="Response body example"
+{
+  "identifier": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "brokerageName": "Corretora Exemplo Ltda",
+  "cnpj": "12345678000195",
+  "email": "contato@corretora.com.br",
+  "phone": "11999990000"
+}
+```
+
+**404 Not Found** — no brokerage with the given identifier exists.
+
+<Footer />

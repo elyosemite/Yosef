@@ -1,6 +1,12 @@
 ---
-title: "ADR-001: REST API Versioning Strategy"
+id: rest-api-versioning
+name: "ADR-001: REST API Versioning Strategy"
+version: 1.0.0
+status: accepted
+date: 2025-06-28
 summary: All REST endpoints in Yosef microservices are prefixed with /api/v1/ to enable non-breaking evolution of the API surface.
+owners:
+  - yosef-team
 badges:
   - content: 'Accepted'
     backgroundColor: 'green'
@@ -8,7 +14,13 @@ badges:
   - content: 'ProjectManagement'
     backgroundColor: 'blue'
     textColor: 'blue'
+appliesTo:
+  - id: ProjectManagementService
+    version: 0.1.0
+    type: service
 ---
+
+import Footer from '@catalog/components/footer.astro';
 
 ## Status
 
@@ -60,3 +72,5 @@ All REST endpoints across Yosef microservices are prefixed with `/api/v{n}/`, wh
 - **No versioning prefix** (`/brokerages`): Rejected. Any breaking change becomes a forced migration for all consumers.
 - **Header-based versioning** (`Accept: application/vnd.yosef.v1+json`): Rejected. Harder to test, harder to discover, not idiomatic for .NET Minimal API.
 - **Query-string versioning** (`?version=1`): Rejected. Makes URLs ugly and caching harder.
+
+<Footer />

@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: Project Management Service
+  description: |
+    Manages the organizational hierarchy of the Yosef insurance platform.
+    Responsible for Brokerages, Brokers, Insureds, and Projects.
+  version: 0.1.0
+  contact:
+    name: Yosef Team
+    url: https://github.com/elyosemite/Yosef
+
+servers:
+  - url: http://localhost:8080/api/project-management
+    description: Local development (via nginx)
+
+tags:
+  - name: Brokerages
+    description: Brokerage management operations
+
+paths:
+  /api/v1/brokerages:
+    post:
+      tags:
+        - Brokerages
+      summary: Create a new brokerage
+      operationId: CreateBrokerage
+      x-eventcatalog-message-type: command
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBrokerageRequest'
+            examples:
+              valid:
+                summary: Valid request
+                value:
+                  brokerageName: "Corretora Exemplo Ltda"
+                  cnpj: "12345678000195"
+                  email: "contato@corretora.com.br"
+                  phone: "11999990000"
+              without-phone:
+                summary: Without optional phone
+                value:
+                  brokerageName: "Corretora Mínima Ltda"
+                  cnpj: "98765432000111"
+                  email: "contato@minima.com.br"
+      responses:
+        '201':
+          description: Brokerage created successfully
+          headers:
+            Location:
+              description: URL of the created brokerage
+              schema:
+                type: string
+                example: /api/v1/brokerages/3fa85f64-5717-4562-b3fc-2c963f66afa6
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBrokerageResponse'
+        '400':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+
+  /api/v1/brokerages/{brokerageIdentifier}:
+    get:
+      tags:
+        - Brokerages
+      summary: Get a brokerage by ID
+      operationId: GetBrokerage
+      x-eventcatalog-message-type: query
+      parameters:
+        - name: brokerageIdentifier
+          in: path
+          required: true
+          description: The unique identifier (GUID) of the brokerage
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Brokerage found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBrokerageResponse'
+        '404':
+          description: Brokerage not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+components:
+  schemas:
+    CreateBrokerageRequest:
+      type: object
+      required:
+        - brokerageName
+        - cnpj
+        - email
+      properties:
+        brokerageName:
+          type: string
+          maxLength: 100
+          description: Legal name of the brokerage company
+          example: "Corretora Exemplo Ltda"
+        cnpj:
+          type: string
+          minLength: 14
+          maxLength: 14
+          description: Brazilian company tax ID (CNPJ), 14 digits without formatting
+          example: "12345678000195"
+        email:
+          type: string
+          format: email
+          description: Corporate contact email address
+          example: "contato@corretora.com.br"
+        phone:
+          type: string
+          nullable: true
+          description: Corporate phone number (optional)
+          example: "11999990000"
+
+    CreateBrokerageResponse:
+      type: object
+      properties:
+        brokerageIdentifier:
+          type: string
+          format: uuid
+          description: Unique identifier assigned to the created brokerage
+        brokerageName:
+          type: string
+          description: Name of the created brokerage
+
+    GetBrokerageResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          format: uuid
+        brokerageName:
+          type: string
+        cnpj:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+
+    ValidationProblemDetails:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string

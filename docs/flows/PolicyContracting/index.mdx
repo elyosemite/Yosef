@@ -5,6 +5,44 @@ summary: End-to-end flow from broker login through quotation, proposal acceptanc
 version: 0.1.0
 owners:
   - yosef-team
+steps:
+  - id: broker-login
+    title: Broker Login
+    summary: Broker authenticates with the Identity Service and receives a JWT token.
+    actor:
+      name: Broker
+      summary: Insurance broker initiating the policy contracting process.
+    next_step: request-quote
+
+  - id: request-quote
+    title: Request Quote
+    summary: Broker submits a quote request to the Quotation Service.
+    service:
+      id: QuotationService
+      version: 0.1.0
+    next_step: create-proposal
+
+  - id: create-proposal
+    title: Create Proposal
+    summary: Quotation Service calculates the premium and generates an insurance proposal. Notification Service emails the Insured.
+    service:
+      id: QuotationService
+      version: 0.1.0
+    next_step: accept-proposal
+
+  - id: accept-proposal
+    title: Accept Proposal
+    summary: Broker confirms the Insured's acceptance of the proposal.
+    actor:
+      name: Broker
+    next_step: issue-policy
+
+  - id: issue-policy
+    title: Issue Policy
+    summary: Policy Service issues the insurance policy and Notification Service delivers it to the Insured.
+    service:
+      id: PolicyService
+      version: 0.1.0
 ---
 
 import Footer from '@catalog/components/footer.astro';

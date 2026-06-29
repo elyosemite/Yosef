@@ -1,0 +1,74 @@
+---
+id: CreateBrokerage
+name: Create Brokerage
+version: 0.1.0
+summary: Registers a new insurance brokerage in the platform with its legal identity and contact information.
+owners:
+  - yosef-team
+operation:
+  method: POST
+  path: /api/v1/brokerages
+  statusCodes:
+    - "201"
+    - "400"
+badges:
+  - content: REST
+    backgroundColor: blue
+    textColor: blue
+  - content: v1
+    backgroundColor: gray
+    textColor: gray
+---
+
+import Footer from '@catalog/components/footer.astro';
+
+## Overview
+
+Creates a new **Brokerage** in the Yosef platform. A Brokerage is the root organizational entity — it represents the large insurance company that owns the platform contract and under which Brokers and Insureds are organized.
+
+## Request
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `brokerageName` | `string` | ✓ | Legal name of the brokerage. Max 100 characters. |
+| `cnpj` | `string` | ✓ | Brazilian company tax ID (CNPJ), exactly 14 digits, no formatting. |
+| `email` | `string` | ✓ | Corporate contact email address. |
+| `phone` | `string` | — | Corporate phone number (optional). |
+
+```json title="Request body example"
+{
+  "brokerageName": "Corretora Exemplo Ltda",
+  "cnpj": "12345678000195",
+  "email": "contato@corretora.com.br",
+  "phone": "11999990000"
+}
+```
+
+## Response
+
+**201 Created** — returns the created brokerage identifier and name, plus a `Location` header.
+
+```json title="Response body example"
+{
+  "brokerageIdentifier": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "brokerageName": "Corretora Exemplo Ltda"
+}
+```
+
+| Header | Value |
+|--------|-------|
+| `Location` | `/api/v1/brokerages/{brokerageIdentifier}` |
+
+## Validation errors (400)
+
+| Field | Rule |
+|-------|------|
+| `brokerageName` | Cannot be empty; max 100 characters |
+| `cnpj` | Cannot be empty; must be exactly 14 digits |
+| `email` | Cannot be empty; must be a valid email address |
+
+## Domain event published
+
+Upon successful creation, the service publishes **`BrokerageCreatedEvent`** to the outbox for async dispatch.
+
+<Footer />

@@ -6,6 +6,10 @@ summary: |
   Manages Brokerages, Brokers, Insureds, and Projects. The first deliverable of the Yosef platform.
 owners:
   - yosef-team
+specifications:
+  - type: openapi
+    path: openapi.yaml
+    name: REST API — v1
 sends:
   - id: BrokerageCreatedEvent
   - id: BrokerageArchivedEvent
@@ -14,6 +18,9 @@ sends:
   - id: InsuredRegisteredEvent
   - id: InsuredAssociatedToBrokerEvent
   - id: ProjectCreatedEvent
+receives:
+  - id: CreateBrokerage
+  - id: GetBrokerage
 repository:
   language: C#
   url: 'https://github.com/elyosemite/Yosef/tree/main/src/ProjectManagement'
