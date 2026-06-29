@@ -15,8 +15,9 @@ public class BrokerageConfiguration : IEntityTypeConfiguration<BrokerageDataMode
 
         builder.Property(o => o.Identifier).ValueGeneratedNever();
         builder.Property(o => o.BrokerageName).HasColumnName("OrganizationName");
-        builder.Property(o => o.ContributorsCount);
-        builder.Property(o => o.Secret);
+        builder.Property(o => o.CNPJ).IsRequired();
+        builder.Property(o => o.Email).IsRequired();
+        builder.Property(o => o.Phone);
 
         builder.HasMany(o => o.Projects)
             .WithOne(p => p.Organization)

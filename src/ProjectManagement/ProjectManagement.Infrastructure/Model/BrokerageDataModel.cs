@@ -8,8 +8,9 @@ public class BrokerageDataModel : ITableObject<int>
 {
     public int Id { get; set; }
     public string BrokerageName { get; set; } = null!;
-    public int ContributorsCount { get; set; }
-    public string? Secret { get; set; }
+    public string CNPJ { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string? Phone { get; set; }
     public Guid Identifier { get; set; }
 
     [JsonIgnore]
@@ -28,12 +29,13 @@ public class BrokerageProfile : Profile
         CreateMap<Brokerage, BrokerageDataModel>()
             .ForMember(dest => dest.Identifier, opt => opt.MapFrom(src => src.Identifier))
             .ForMember(dest => dest.BrokerageName, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.ContributorsCount, opt => opt.MapFrom(src => src.ContributorsCount))
-            .ForMember(dest => dest.Secret, opt => opt.MapFrom(src => src.Secret))
+            .ForMember(dest => dest.CNPJ, opt => opt.MapFrom(src => src.CNPJ))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
             .ForMember(dest => dest.Projects, opt => opt.MapFrom(src => src.Projects));
 
         CreateMap<BrokerageDataModel, Brokerage>()
             .ForMember(dest => dest.Projects, opt => opt.Ignore())
-            .ConstructUsing(src => Brokerage.BrokerageFactory(src.Identifier, src.BrokerageName, src.ContributorsCount));
+            .ConstructUsing(src => Brokerage.BrokerageFactory(src.Identifier, src.BrokerageName, src.CNPJ, src.Email, src.Phone));
     }
 }
