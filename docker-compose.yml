@@ -35,7 +35,10 @@ services:
     volumes:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # Arquivo de configuração
       - prometheus-data:/prometheus # Volume para persistir dados
-    command: --config.file=/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.external-url=http://localhost/prometheus/
+      - --web.route-prefix=/prometheus/
     networks:
       - monitoring-net
 
@@ -86,6 +89,7 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
       COLLECTOR_ZIPKIN_HOST_PORT: "9411"
+      QUERY_BASE_PATH: /jaeger
     volumes:
       - jaeger_data:/badger
     networks:
@@ -202,6 +206,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     command: start-dev
+    container_name: keycloak
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
