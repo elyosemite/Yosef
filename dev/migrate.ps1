@@ -70,8 +70,8 @@ function Run-Migration([string]$provider, [string]$dbName) {
         --project "$infraDir/ProjectManagement.Infrastructure.csproj" `
         --startup-project "$presentationDir/ProjectManagement.Presentation.csproj" `
         --context "BrokerageContext" `
-        --connection "$connectionString" `
-        --no-build
+        --no-build `
+        "$connectionString"
 
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Migration for $dbName succeeded"
