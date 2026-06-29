@@ -20,3 +20,5 @@ erl_crash.dump
 
 # Identity
 /src/**/__pycache__
+
+secrets.json
