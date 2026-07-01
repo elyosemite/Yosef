@@ -215,6 +215,20 @@ services:
     ports:
       - "8060:8080"
 
+  k6:
+    image: grafana/k6:latest
+    container_name: k6
+    profiles: ["testing"]
+    environment:
+      - BASE_URL=http://nginx
+    volumes:
+      - ./tests/k6:/tests
+    working_dir: /tests
+    networks:
+      - monitoring-net
+    depends_on:
+      - nginx
+
 networks:
   monitoring-net:
     driver: bridge

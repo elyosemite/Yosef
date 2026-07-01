@@ -1,6 +1,58 @@
 {
     "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "dockerService",
+            "type": "pickString",
+            "description": "Serviço Docker",
+            "options": [
+                "projectmanagement",
+                "quotation",
+                "eventprocessor",
+                "migrator",
+                "db",
+                "rabbitmq",
+                "keycloak",
+                "nginx",
+                "loki",
+                "prometheus",
+                "grafana",
+                "jaeger",
+                "otel-collector"
+            ]
+        },
+        {
+            "id": "dockerAction",
+            "type": "pickString",
+            "description": "Operação a executar no serviço escolhido",
+            "options": [
+                { "label": "Build Image", "value": "build" },
+                { "label": "Start (up -d)", "value": "up -d" },
+                { "label": "Restart", "value": "restart" }
+            ]
+        },
+        {
+            "id": "k6TestFile",
+            "type": "pickString",
+            "description": "Teste k6 a executar",
+            "options": [
+                "integration/project-management/create-brokerage.test.js"
+            ]
+        }
+    ],
     "tasks": [
+        {
+            "label": "Docker: Service Action",
+            "type": "shell",
+            "command": "docker compose ${input:dockerAction} ${input:dockerService}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker: Run k6 Test",
+            "type": "shell",
+            "command": "docker compose --profile testing run --rm k6 run /tests/${input:k6TestFile}",
+            "problemMatcher": []
+        },
         {
             "label": "build",
             "command": "dotnet",

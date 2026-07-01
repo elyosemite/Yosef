@@ -1,5 +1,8 @@
 .vscode
 bin
+obj
+**/bin
+**/obj
 .git
 docs
 Observability
