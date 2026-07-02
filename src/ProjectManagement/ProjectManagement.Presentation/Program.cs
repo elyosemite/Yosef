@@ -3,6 +3,7 @@ using ProjectManagement.Presentation.Endpoints.CreateBrokerage;
 using ProjectManagement.Presentation.Endpoints.GetBrokerage;
 using ProjectManagement.Presentation.Endpoints.RenameBrokerage;
 using ProjectManagement.Presentation.Endpoints.CreateProject;
+using ProjectManagement.Presentation.ExceptionHandling;
 using ProjectManagement.Infrastructure;
 using ProjectManagement.Infrastructure.Settings;
 using Serilog;
@@ -110,6 +111,7 @@ public class Program
             var globalSettings = builder.Services.AddGlobalSettingsServices(builder.Configuration, builder.Environment);
 
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
             builder.Services.AddOpenTelemetry()
             .WithTracing(tracerProviderBuilder =>
