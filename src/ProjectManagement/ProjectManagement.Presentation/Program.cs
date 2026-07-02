@@ -1,10 +1,10 @@
 using AutoMapper;
 using ProjectManagement.Presentation.Endpoints.CreateBrokerage;
 using ProjectManagement.Presentation.Endpoints.GetBrokerage;
+using ProjectManagement.Presentation.Endpoints.RenameBrokerage;
 using ProjectManagement.Presentation.Endpoints.CreateProject;
 using ProjectManagement.Infrastructure;
 using ProjectManagement.Infrastructure.Settings;
-using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Exceptions;
 using FluentValidation;
@@ -16,9 +16,6 @@ using Serilog.Sinks.OpenTelemetry;
 using Serilog.Events;
 using System.Diagnostics;
 using ProjectManagement.Infrastructure.Metric;
-using ProjectManagement.Application.Repository;
-using Mediator;
-using Yosef.ProjectManagement.Application.Brokerage.RenameBrokerage;
 using ProjectManagement.Application;
 
 namespace ProjectManagement.Presentation;
@@ -26,11 +23,11 @@ namespace ProjectManagement.Presentation;
 public class Program
 {
     private static readonly Random _random = new Random();
-    private static readonly ActivitySource _greeterActivitySource = new ActivitySource("ApplicationBeginning");
+    internal static readonly ActivitySource GreeterActivitySource = new ActivitySource("ApplicationBeginning");
 
-    private static async Task Delay<T>(ILogger<T> logger)
+    internal static async Task Delay<T>(ILogger<T> logger)
     {
-        using var activity = _greeterActivitySource.StartActivity("Simulate delay");
+        using var activity = GreeterActivitySource.StartActivity("Simulate delay");
         activity?.SetStatus(ActivityStatusCode.Unset, "The status for this operation has not been set yet");
         activity?.AddEvent(new ActivityEvent("Delay started"));
         activity?.AddEvent(new ActivityEvent("Delay finished (if any)"));
@@ -119,7 +116,7 @@ public class Program
             {
                 tracerProviderBuilder
                     .AddSource("Yosef")
-                    .AddSource(_greeterActivitySource.Name)
+                    .AddSource(GreeterActivitySource.Name)
                     .ConfigureResource(resource => resource
                         .AddService("Yosef", serviceInstanceId: Environment.MachineName))
                     .AddAspNetCoreInstrumentation()
@@ -207,80 +204,10 @@ public class Program
                 .Produces<GlobalSettings>(StatusCodes.Status200OK);
 #endif
 
-            brokerages.MapPost("/", async ([FromBody] BrokerageRequest req, IValidator<BrokerageRequest> validator, ILogger<CreateBrokerage> logger) =>
-                {
-                    using var activity = _greeterActivitySource.StartActivity("CreateBrokerage");
-                    logger.LogInformation("Creating brokerage");
-
-                    Metrics.CountGreetings.Add(1);
-
-                    var brokerageRepository = app.Services.GetRequiredService<IBrokerageRepository>();
-                    var mapper = app.Services.GetRequiredService<IMapper>();
-
-                    await Delay(logger);
-
-                    var result = await new CreateBrokerage(brokerageRepository, mapper, logger, validator).ActionAsync(req);
-
-                    Metrics.CountBrokeragesCreated.Add(1);
-                    activity?.SetTag("brokerage.name", req.BrokerageName);
-
-                    return result;
-                })
-                .WithName("CreateBrokerage")
-                .Produces<CreateBrokerageResponse>(StatusCodes.Status201Created)
-                .Produces<HttpValidationProblemDetails>(StatusCodes.Status400BadRequest)
-                .ProducesProblem(StatusCodes.Status500InternalServerError);
-
-            brokerages.MapGet("/{id:guid}", async ([FromRoute] Guid id, ILogger<GetBrokerage> logger) =>
-                {
-                    using var activity = _greeterActivitySource.StartActivity("GetBrokerage");
-                    logger.LogInformation("Get brokerage by id = {Id}", id);
-
-                    var brokerageRepository = app.Services.GetRequiredService<IBrokerageRepository>();
-
-                    await Delay(logger);
-
-                    activity?.SetTag("brokerage.id", id);
-
-                    return await new GetBrokerage(brokerageRepository)
-                        .ActionAsync(new GetBrokerageRequest(id));
-                })
-                .WithName("GetBrokerage")
-                .Produces<GetBrokerageResponse>(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound)
-                .ProducesProblem(StatusCodes.Status500InternalServerError);
-
-            brokerages.MapPatch("/{id:guid}/name", async ([FromRoute] Guid id, [FromBody] RenameBrokerageRequest req, ILogger<GetBrokerage> logger, IMediator mediator) =>
-                {
-                    using var activity = _greeterActivitySource.StartActivity("RenameBrokerage");
-                    logger.LogInformation("Renaming brokerage {Id}", id);
-
-                    req.BrokerageId = id;
-                    activity?.SetTag("brokerage.id", id);
-
-                    return await mediator.Send(req);
-                })
-                .WithName("RenameBrokerage")
-                .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound)
-                .ProducesProblem(StatusCodes.Status500InternalServerError);
-
-            brokerages.MapPost("/{id:guid}/projects", async ([FromRoute] Guid id, [FromBody] CreateProjectRequest req, ILogger<CreateProject> logger) =>
-                {
-                    using var activity = _greeterActivitySource.StartActivity("CreateProject");
-                    logger.LogInformation("Creating project for brokerage {Id}", id);
-
-                    var brokerageRepository = app.Services.GetRequiredService<IBrokerageRepository>();
-
-                    req = req with { OrganizationIdentifier = id };
-                    activity?.SetTag("brokerage.id", id);
-
-                    return await new CreateProject(brokerageRepository).ActionAsync(req);
-                })
-                .WithName("CreateProject")
-                .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound)
-                .ProducesProblem(StatusCodes.Status500InternalServerError);
+            brokerages.MapCreateBrokerage(app);
+            brokerages.MapGetBrokerage(app);
+            brokerages.MapRenameBrokerage();
+            brokerages.MapCreateProject(app);
 
             app.MapPrometheusScrapingEndpoint();
             app.Run();
