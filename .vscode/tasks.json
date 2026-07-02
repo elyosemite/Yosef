@@ -36,7 +36,10 @@
             "type": "pickString",
             "description": "Teste k6 a executar",
             "options": [
-                "integration/project-management/create-brokerage.test.js"
+                "integration/project-management/create-brokerage.test.js",
+                "integration/project-management/get-brokerage.test.js",
+                "integration/project-management/rename-brokerage.test.js",
+                "integration/project-management/create-project.test.js"
             ]
         }
     ],
